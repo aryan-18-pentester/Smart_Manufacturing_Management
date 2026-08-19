@@ -1,0 +1,175 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - FlaskDash{% endblock %}
+{% block page_title %}Dashboard{% endblock %}
+
+{% block extra_css %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+{% endblock %}
+
+{% block content %}
+<!-- ===== STATISTICS CARDS ===== -->
+<div class="row g-4 mb-4">
+  <div class="col-md-3 col-6">
+    <div class="stat-card">
+      <div class="d-flex justify-content-between align-items-center">
+        <div>
+          <p class="stat-label">Total Users</p>
+          <p class="stat-number">{{ total_users|default(0) }}</p>
+        </div>
+        <i class="fas fa-users stat-icon"></i>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3 col-6">
+    <div class="stat-card border-warning">
+      <div class="d-flex justify-content-between align-items-center">
+        <div>
+          <p class="stat-label">Revenue</p>
+          <p class="stat-number">${{ revenue|default(0) }}</p>
+        </div>
+        <i class="fas fa-dollar-sign stat-icon warning"></i>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3 col-6">
+    <div class="stat-card border-success">
+      <div class="d-flex justify-content-between align-items-center">
+        <div>
+          <p class="stat-label">Orders</p>
+          <p class="stat-number">{{ total_orders|default(0) }}</p>
+        </div>
+        <i class="fas fa-shopping-cart stat-icon success"></i>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3 col-6">
+    <div class="stat-card border-danger">
+      <div class="d-flex justify-content-between align-items-center">
+        <div>
+          <p class="stat-label">Pending</p>
+          <p class="stat-number">{{ pending_orders|default(0) }}</p>
+        </div>
+        <i class="fas fa-clock stat-icon danger"></i>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== CHARTS ROW ===== -->
+<div class="row g-4 mb-4">
+  <div class="col-lg-6">
+    <div class="chart-box" style="background:#fff;border-radius:12px;padding:1.2rem;box-shadow:0 2px 8px rgba(0,0,0,0.04);">
+      <h6 class="mb-3"><i class="fas fa-chart-bar me-2 text-primary"></i>Monthly Sales</h6>
+      <canvas id="barChart" height="200"></canvas>
+    </div>
+  </div>
+  <div class="col-lg-6">
+    <div class="chart-box" style="background:#fff;border-radius:12px;padding:1.2rem;box-shadow:0 2px 8px rgba(0,0,0,0.04);">
+      <h6 class="mb-3"><i class="fas fa-chart-line me-2 text-success"></i>Visitors Trend</h6>
+      <canvas id="lineChart" height="200"></canvas>
+    </div>
+  </div>
+</div>
+
+<!-- ===== RECENT ORDERS ===== -->
+<div class="row">
+  <div class="col-12">
+    <div class="table-container">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h6 class="mb-0"><i class="fas fa-list-ul me-2 text-primary"></i>Recent Orders</h6>
+        <a href="{{ url_for('orders') }}" class="text-decoration-none small">View all</a>
+      </div>
+      <div class="table-responsive">
+        <table class="table table-hover align-middle">
+          <thead>
+            <tr>
+              <th>Order ID</th>
+              <th>Customer</th>
+              <th>Machine</th>
+              <th>Total</th>
+              <th>Status</th>
+              <th>Date</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for order in recent_orders %}
+            <tr>
+              <td>{{ order.id }}</td>
+              <td>{{ order.customer_name }}</td>
+              <td>{{ order.machine_name }}</td>
+              <td>${{ "%.2f"|format(order.total) }}</td>
+              <td>
+                <span class="badge badge-status 
+                  {% if order.status == 'Pending' %}bg-warning text-dark
+                  {% elif order.status == 'Shipped' %}bg-info text-white
+                  {% elif order.status == 'Delivered' %}bg-success text-white
+                  {% else %}bg-secondary text-white{% endif %}">
+                  {{ order.status }}
+                </span>
+              </td>
+              <td>{{ order.date.strftime('%Y-%m-%d') if order.date else '' }}</td>
+            </tr>
+            {% else %}
+            <tr>
+              <td colspan="6" class="text-center py-4 text-muted">No recent orders</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  // Bar chart
+  const barCtx = document.getElementById('barChart').getContext('2d');
+  new Chart(barCtx, {
+    type: 'bar',
+    data: {
+      labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+      datasets: [{
+        label: 'Sales (USD)',
+        data: {{ chart_data|default([3200, 2800, 4100, 3900, 5200, 4800])|tojson }},
+        backgroundColor: 'rgba(52, 152, 219, 0.6)',
+        borderColor: 'rgba(52, 152, 219, 1)',
+        borderWidth: 1,
+        borderRadius: 4
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: { y: { beginAtZero: true } }
+    }
+  });
+
+  // Line chart
+  const lineCtx = document.getElementById('lineChart').getContext('2d');
+  new Chart(lineCtx, {
+    type: 'line',
+    data: {
+      labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+      datasets: [{
+        label: 'Visitors',
+        data: {{ visitors_data|default([120, 190, 170, 240, 210, 280, 310])|tojson }},
+        backgroundColor: 'rgba(46, 204, 113, 0.1)',
+        borderColor: 'rgba(46, 204, 113, 1)',
+        tension: 0.3,
+        fill: true,
+        pointBackgroundColor: '#2ecc71'
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: { y: { beginAtZero: true } }
+    }
+  });
+</script>
+{% endblock %}
