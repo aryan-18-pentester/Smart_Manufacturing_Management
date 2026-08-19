@@ -4,7 +4,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_dance.consumer.storage.sqla import OAuthConsumerMixin
-from ai import ask_ai
+from ai_assistant import ask_ai
 from sqlalchemy import func
 from sqlalchemy.exc import SQLAlchemyError
 

@@ -1,4 +1,7 @@
 flask
+flask-dance
+flask-login
 flask-sqlalchemy
 requests
 resend 
+ai
