@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Login - FlaskDash</title>
+  <title>Login</title>
 
   <!-- Bootstrap 5 & Font Awesome -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -317,7 +317,7 @@
       <div class="login-header">
         <i class="fas fa-chart-pie brand-icon"></i>
         <h3>Welcome Back</h3>
-        <p>Sign in to continue to FlaskDash</p>
+        <p>Sign in to continue</p>
       </div>
 
       <!-- Flash Messages -->
@@ -338,8 +338,8 @@
         {{ form.hidden_tag() if form else '' }}
         
         <div class="form-floating">
-          <input type="email" class="form-control" id="email" name="email" placeholder="name@example.com" required>
-          <label for="email"><i class="fas fa-envelope me-2"></i>Email address</label>
+          <input type="username" class="form-control" id="username" name="username" placeholder="" required>
+          <label for="username">username</label>
         </div>
 
         <div class="form-floating">
@@ -351,28 +351,10 @@
           <div class="form-check">
             <input class="form-check-input" type="checkbox" id="remember" name="remember">
             <label class="form-check-label" for="remember">Remember me</label>
-          </div>
-          <a href="{{ url_for('forgot_password') }}">Forgot password?</a>
-        </div>
-
-        <button type="submit" class="btn btn-login">
+                  <button type="submit" class="btn btn-login">
           <i class="fas fa-sign-in-alt me-2"></i>Sign In
         </button>
       </form>
-
-      <!-- Divider -->
-      <div class="divider">or continue with</div>
-
-      <!-- Social Login -->
-      <div class="social-login">
-        <button class="btn-social" onclick="alert('Google login coming soon!')">
-          <i class="fab fa-google" style="color:#ea4335;"></i> Google
-        </button>
-        <button class="btn-social" onclick="alert('GitHub login coming soon!')">
-          <i class="fab fa-github" style="color:#333;"></i> GitHub
-        </button>
-      </div>
-
       <!-- Register Link -->
       <div class="register-link mt-3">
         Don't have an account? <a href="{{ url_for('register') }}">Sign up now</a>

@@ -20,7 +20,7 @@
   <!-- ===== SIDEBAR ===== -->
   <nav class="sidebar" id="sidebar">
     <div class="brand">
-      <i class="fas fa-chart-pie"></i> FlaskDash
+      <i class="fas fa-chart-pie"></i> Dashboard
     </div>
     <ul class="nav flex-column">
       <li class="nav-item">
@@ -31,7 +31,7 @@
       </li>
       <li class="nav-item">
         <a class="nav-link {% if request.endpoint == 'inventory' %}active{% endif %}" 
-           href="{{ url_for('inventory') }}">
+           href="{{ url_for('Machines') }}">
           <i class="fas fa-boxes"></i> Inventory
         </a>
       </li>
@@ -43,13 +43,13 @@
       </li>
       <li class="nav-item">
         <a class="nav-link {% if request.endpoint == 'assistant' %}active{% endif %}" 
-           href="{{ url_for('assistant') }}">
+           href="{{ url_for('Ai_assistant') }}">
           <i class="fas fa-robot"></i> AI Assistant
         </a>
       </li>
       <li class="nav-item">
-        <a class="nav-link {% if request.endpoint == 'switch_account' %}active{% endif %}" 
-           href="{{ url_for('switch_account') }}">
+        <a class="nav-link {% if request.endpoint == 'switch_user' %}active{% endif %}" 
+           href="{{ url_for('switch_user') }}">
           <i class="fas fa-exchange-alt"></i> Switch Account
         </a>
       </li>
@@ -99,11 +99,7 @@
             </span>
           </a>
           <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0 mt-2" 
-              aria-labelledby="userDropdown" style="border-radius: 10px;">
-            <li><a class="dropdown-item" href="{{ url_for('profile') }}"><i class="fas fa-user me-2"></i> Profile</a></li>
-            <li><a class="dropdown-item" href="{{ url_for('settings') }}"><i class="fas fa-cog me-2"></i> Settings</a></li>
-            <li><hr class="dropdown-divider"></li>
-            <li><a class="dropdown-item" href="{{ url_for('switch_account') }}"><i class="fas fa-exchange-alt me-2"></i> Switch User</a></li>
+            <li><a class="dropdown-item" href="{{ url_for('switch_user') }}"><i class="fas fa-exchange-alt me-2"></i> Switch User</a></li>
             <li><a class="dropdown-item text-danger" href="{{ url_for('logout') }}"><i class="fas fa-sign-out-alt me-2"></i> Logout</a></li>
           </ul>
         </div>
