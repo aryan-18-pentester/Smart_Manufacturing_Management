@@ -158,7 +158,7 @@
         <h5 class="modal-title" id="modalLabel"><i class="fas fa-plus-circle me-2 text-primary"></i>Add New Item</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
-      <form action="{{ url_for('add_inventory_item') }}" method="POST" id="inventoryForm">
+      <form action="{{ url_for('Machines') }}" method="POST" id="inventoryForm">
         <div class="modal-body">
           <input type="hidden" name="item_id" id="itemId" value="">
           <div class="row g-3">
@@ -263,7 +263,7 @@
 
   document.getElementById('confirmDeleteBtn').addEventListener('click', function() {
     const id = document.getElementById('deleteItemId').value;
-    window.location.href = "{{ url_for('delete_inventory_item') }}?id=" + id;
+   window.location.href = "/delete_record/" + id;
   });
 
   // Reset modal

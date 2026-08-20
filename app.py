@@ -190,12 +190,11 @@ def Machines():
             db.session.add(record)
 
         print(request.form)
-    page = request.args.get('page', 1, type=int)  # Corrected this line
-    data = Data.query.filter_by(user_id=user.id).paginate(page=request.args.get(
- 'page', 1, type=int), per_page=per_page)
+    '''page = request.args.get('page', 1, type=int)'''  # Corrected this line
+    inventory = Data.query.filter_by(user_id=user.id).all()
     db.session.commit()
 
-    return render_template('Machines.html', inventory=data, total_items=total_items, low_stock=low_stock, total_value=total_value, page=page, total_pages=total_pages)
+    return render_template('Machines.html', inventory=inventory, total_items=total_items, low_stock=low_stock, total_value=total_value)
 
 
 
