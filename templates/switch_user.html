@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+
+{% block title %}Switch User - FlaskDash{% endblock %}
+{% block page_title %}Switch Account{% endblock %}
+
+{% block content %}
+<!-- ===== PAGE HEADER ===== -->
+<div class="d-flex flex-wrap justify-content-between align-items-center mb-4">
+  <div>
+    <h4 class="mb-1"><i class="fas fa-user-friends me-2 text-primary"></i>Switch Account</h4>
+    <p class="text-muted small mb-0">
+      Switch between different user accounts. Currently logged in as: 
+      <strong>{{ current_user.username }}</strong>
+    </p>
+  </div>
+</div>
+
+<!-- ===== USER GRID ===== -->
+<div class="row g-4">
+  {% for account in accounts %}
+  <div class="col-md-6 col-lg-4">
+    <div class="account-card {% if account.id == current_user.id %}active{% endif %} p-4 text-center h-100">
+      <div class="d-flex justify-content-between align-items-start mb-2">
+        <span></span>
+        <span class="badge {% if account.id == current_user.id %}bg-success{% else %}bg-secondary{% endif %}">
+          {% if account.id == current_user.id %}
+            <i class="fas fa-check-circle me-1"></i>Current
+          {% else %}
+            Inactive
+          {% endif %}
+        </span>
+      </div>
+      <i class="fas fa-user-circle avatar"></i>
+      <h5 class="mt-2 mb-0">{{ account.username }}</h5>
+      <p class="text-muted small">ID: {{ account.id }}</p>
+      
+      {% if account.id == current_user.id %}
+        <!-- Current user - show logout option -->
+        <form action="{{ url_for('logout') }}" method="POST" class="d-inline">
+          <button type="submit" class="btn btn-outline-danger btn-sm px-4">
+            <i class="fas fa-sign-out-alt me-1"></i> Logout
+          </button>
+        </form>
+      {% else %}
+        <!-- Switch to this account -->
+        <form action="{{ url_for('switch_user') }}" method="POST" class="d-inline">
+          <input type="hidden" name="user_id" value="{{ account.id }}">
+          <button type="submit" class="btn btn-outline-primary btn-sm px-4">
+            <i class="fas fa-exchange-alt me-1"></i> Switch to this
+          </button>
+        </form>
+      {% endif %}
+    </div>
+  </div>
+  {% else %}
+  <div class="col-12 text-center py-5">
+    <i class="fas fa-user-slash fa-3x text-muted mb-3"></i>
+    <h5>No users found</h5>
+    <p class="text-muted">There are no other users to switch to.</p>
+  </div>
+  {% endfor %}
+</div>
+
+<!-- ===== ADDITIONAL OPTION ===== -->
+<div class="row mt-4">
+  <div class="col-12">
+    <div class="card">
+      <div class="card-body text-center">
+        <h6 class="mb-2"><i class="fas fa-plus-circle text-primary me-2"></i>Need another account?</h6>
+        <p class="text-muted small mb-3">Register a new account to add it to your switch list.</p>
+        <a href="{{ url_for('register') }}" class="btn btn-primary">
+          <i class="fas fa-user-plus me-2"></i>Register New Account
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  /* Additional styles for switch user */
+  .account-card {
+    transition: 0.2s;
+    border-radius: 16px;
+    border: 2px solid #e9ecef;
+    background: #fff;
+  }
+  .account-card:hover {
+    box-shadow: 0 8px 24px rgba(0,0,0,0.06);
+    transform: translateY(-3px);
+  }
+  .account-card.active {
+    border-color: #28a745;
+    background: #fafffe;
+  }
+  .account-card .avatar {
+    font-size: 3.8rem;
+    color: #6c757d;
+  }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Add any additional JavaScript if needed
+    console.log('Switch User page loaded');
+  });
+</script>
+{% endblock %}

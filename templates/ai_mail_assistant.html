@@ -1,629 +1,127 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Mail Assistant - FlaskDash</title>
+{% extends "base.html" %}
 
-    <!-- Bootstrap 5 & Font Awesome -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+{% block title %}Email Assistant - FlaskDash{% endblock %}
+{% block page_title %}AI Email Assistant{% endblock %}
 
-    <style>
-        /* ===== SIDEBAR (matching your dashboard) ===== */
-        body {
-            background-color: #f4f6f9;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            height: 100vh;
-            overflow: hidden;
-        }
-        
-        .sidebar {
-            position: fixed;
-            top: 0;
-            left: 0;
-            height: 100vh;
-            width: 250px;
-            background-color: #2c3e50;
-            color: #ecf0f1;
-            transition: transform 0.3s ease;
-            z-index: 1050;
-            padding: 1rem 0;
-            overflow-y: auto;
-        }
-        .sidebar .brand {
-            font-size: 1.5rem;
-            font-weight: 600;
-            padding: 0 1.5rem 1.5rem 1.5rem;
-            border-bottom: 1px solid #34495e;
-            margin-bottom: 1rem;
-        }
-        .sidebar .brand i {
-            margin-right: 10px;
-            color: #3498db;
-        }
-        .sidebar .nav-link {
-            color: #bdc3c7;
-            padding: 0.75rem 1.5rem;
-            border-left: 3px solid transparent;
-            transition: 0.2s;
-        }
-        .sidebar .nav-link:hover,
-        .sidebar .nav-link.active {
-            color: #fff;
-            background-color: #34495e;
-            border-left-color: #3498db;
-        }
-        .sidebar .nav-link i {
-            width: 24px;
-            text-align: center;
-            margin-right: 10px;
-        }
-
-        /* ===== MAIN CONTENT ===== */
-        .main-content {
-            margin-left: 250px;
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
-
-        /* ===== TOP NAVBAR ===== */
-        .top-navbar {
-            background: #fff;
-            padding: 0.75rem 1.5rem;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.05);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            flex-shrink: 0;
-        }
-        .top-navbar .search-box {
-            position: relative;
-        }
-        .top-navbar .search-box input {
-            border-radius: 30px;
-            border: 1px solid #ddd;
-            padding: 0.4rem 1rem 0.4rem 2.2rem;
-            font-size: 0.9rem;
-            width: 240px;
-        }
-        .top-navbar .search-box i {
-            position: absolute;
-            left: 12px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #aaa;
-        }
-        .nav-icons a {
-            color: #555;
-            margin-left: 1.2rem;
-            font-size: 1.2rem;
-            position: relative;
-        }
-        .nav-icons a .badge {
-            position: absolute;
-            top: -6px;
-            right: -8px;
-            font-size: 0.6rem;
-            padding: 0.25rem 0.45rem;
-            background: #e74c3c;
-            color: #fff;
-            border-radius: 50%;
-        }
-        .sidebar-toggle {
-            display: none;
-            background: none;
-            border: none;
-            font-size: 1.5rem;
-            color: #2c3e50;
-            cursor: pointer;
-        }
-
-        /* ===== EMAIL LAYOUT (split view) ===== */
-        .email-container {
-            display: flex;
-            flex: 1;
-            overflow: hidden;
-            gap: 0;
-            padding: 0 1.5rem 1.5rem 1.5rem;
-        }
-
-        /* ===== EMAIL SIDEBAR (inbox list) ===== */
-        .email-sidebar {
-            width: 320px;
-            min-width: 320px;
-            background: #fff;
-            border-radius: 12px 0 0 12px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-        }
-        .email-sidebar .email-list-header {
-            padding: 1rem 1.2rem;
-            border-bottom: 1px solid #e9ecef;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-shrink: 0;
-        }
-        .email-sidebar .email-list-header h6 {
-            margin: 0;
-            font-weight: 600;
-        }
-        .email-sidebar .email-list-header .badge {
-            font-size: 0.75rem;
-        }
-        .email-list {
-            flex: 1;
-            overflow-y: auto;
-            padding: 0;
-        }
-        .email-item {
-            padding: 0.8rem 1.2rem;
-            border-bottom: 1px solid #f1f3f5;
-            cursor: pointer;
-            transition: 0.15s;
-            position: relative;
-        }
-        .email-item:hover {
-            background: #f8f9fa;
-        }
-        .email-item.active {
-            background: #e7f1ff;
-            border-left: 3px solid #0d6efd;
-        }
-        .email-item .email-sender {
-            font-weight: 600;
-            font-size: 0.95rem;
-            color: #212529;
-        }
-        .email-item .email-subject {
-            font-size: 0.85rem;
-            color: #495057;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-        .email-item .email-preview {
-            font-size: 0.8rem;
-            color: #6c757d;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-        .email-item .email-meta {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-top: 0.2rem;
-        }
-        .email-item .email-date {
-            font-size: 0.7rem;
-            color: #adb5bd;
-        }
-        .email-item .email-priority {
-            font-size: 0.6rem;
-            padding: 0.15rem 0.5rem;
-            border-radius: 30px;
-        }
-        .email-item .email-priority.high { background: #fee2e2; color: #dc2626; }
-        .email-item .email-priority.medium { background: #fef3c7; color: #d97706; }
-        .email-item .email-priority.low { background: #e0f2fe; color: #2563eb; }
-        .email-item .email-badge {
-            font-size: 0.6rem;
-            padding: 0.15rem 0.5rem;
-            border-radius: 30px;
-            background: #e9ecef;
-            color: #495057;
-        }
-
-        /* ===== EMAIL DETAIL PANEL ===== */
-        .email-detail {
-            flex: 1;
-            background: #fff;
-            border-radius: 0 12px 12px 0;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-            margin-left: 0;
-            border-left: 1px solid #e9ecef;
-        }
-        .email-detail .detail-header {
-            padding: 1rem 1.5rem;
-            border-bottom: 1px solid #e9ecef;
-            flex-shrink: 0;
-        }
-        .email-detail .detail-header .email-from {
-            font-size: 0.85rem;
-            color: #6c757d;
-        }
-        .email-detail .detail-header .email-subject-detail {
-            font-size: 1.1rem;
-            font-weight: 600;
-            margin: 0.2rem 0;
-        }
-        .email-detail .detail-body {
-            flex: 1;
-            overflow-y: auto;
-            padding: 1.5rem;
-        }
-
-        /* ===== AI INSIGHTS PANEL ===== */
-        .ai-insights {
-            background: #f8f9fa;
-            border-radius: 12px;
-            padding: 1.2rem 1.5rem;
-            margin-top: 1rem;
-            border: 1px solid #e9ecef;
-        }
-        .ai-insights .ai-header {
-            font-weight: 600;
-            color: #0d6efd;
-            margin-bottom: 0.8rem;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .ai-insights .ai-summary {
-            background: #fff;
-            padding: 0.8rem 1rem;
-            border-radius: 8px;
-            margin-bottom: 0.8rem;
-            border-left: 3px solid #0d6efd;
-            font-size: 0.95rem;
-        }
-        .ai-insights .ai-tag {
-            display: inline-block;
-            padding: 0.2rem 0.8rem;
-            border-radius: 30px;
-            font-size: 0.75rem;
-            font-weight: 500;
-            margin-right: 0.3rem;
-        }
-        .ai-insights .ai-tag.supplier { background: #dbeafe; color: #1e40af; }
-        .ai-insights .ai-tag.priority-high { background: #fee2e2; color: #dc2626; }
-        .ai-insights .ai-tag.priority-medium { background: #fef3c7; color: #d97706; }
-        .ai-insights .ai-tag.priority-low { background: #e0f2fe; color: #2563eb; }
-        .ai-insights .key-info {
-            margin: 0.8rem 0;
-            padding-left: 0;
-            list-style: none;
-        }
-        .ai-insights .key-info li {
-            padding: 0.2rem 0;
-            font-size: 0.9rem;
-        }
-        .ai-insights .key-info li i {
-            color: #0d6efd;
-            margin-right: 6px;
-        }
-        .ai-insights .ai-suggestions {
-            margin-top: 0.8rem;
-        }
-        .ai-insights .ai-suggestions .suggestion-item {
-            padding: 0.3rem 0;
-            font-size: 0.9rem;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-        .ai-insights .ai-suggestions .suggestion-item i {
-            color: #0d6efd;
-        }
-        .ai-insights .ai-actions {
-            display: flex;
-            gap: 8px;
-            margin-top: 1rem;
-            flex-wrap: wrap;
-        }
-        .ai-insights .ai-actions .btn {
-            font-size: 0.85rem;
-            padding: 0.3rem 1.2rem;
-            border-radius: 30px;
-        }
-
-        /* ===== EMPTY STATE ===== */
-        .empty-state {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100%;
-            color: #adb5bd;
-            text-align: center;
-        }
-        .empty-state i {
-            font-size: 4rem;
-            margin-bottom: 1rem;
-        }
-
-        /* ===== RESPONSIVE ===== */
-        @media (max-width: 992px) {
-            .email-sidebar {
-                width: 280px;
-                min-width: 280px;
-            }
-        }
-
-        @media (max-width: 768px) {
-            .sidebar {
-                transform: translateX(-100%);
-                width: 260px;
-            }
-            .sidebar.show { transform: translateX(0); }
-            .main-content { margin-left: 0; }
-            .sidebar-toggle { display: inline-block; }
-            .top-navbar .search-box input { width: 150px; }
-            
-            .email-container {
-                flex-direction: column;
-                padding: 0 1rem 1rem 1rem;
-                gap: 1rem;
-            }
-            .email-sidebar {
-                width: 100%;
-                min-width: unset;
-                border-radius: 12px;
-                max-height: 300px;
-            }
-            .email-detail {
-                border-radius: 12px;
-                border-left: none;
-                min-height: 400px;
-            }
-        }
-        @media (max-width: 576px) {
-            .email-sidebar .email-list-header h6 { font-size: 0.9rem; }
-            .email-item { padding: 0.6rem 0.8rem; }
-            .ai-insights { padding: 1rem; }
-            .ai-insights .ai-actions .btn { font-size: 0.75rem; padding: 0.2rem 0.8rem; }
-        }
-    </style>
-</head>
-<body>
-
-    <!-- ===== SIDEBAR ===== -->
-    <nav class="sidebar" id="sidebar">
-        <div class="brand">
-            <i class="fas fa-envelope"></i> AI Mail
-        </div>
-        <ul class="nav flex-column">
-            <li class="nav-item">
-                <a class="nav-link" href="{{ url_for('dashboard') }}"><i class="fas fa-th-large"></i> Dashboard</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link active" href="{{ url_for('ai_mail') }}"><i class="fas fa-envelope"></i> AI Mail</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="#"><i class="fas fa-chart-line"></i> Analytics</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="#"><i class="fas fa-exclamation-triangle"></i> Alerts</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="#"><i class="fas fa-cog"></i> Settings</a>
-            </li>
-        </ul>
-        <hr style="border-color:#34495e; margin: 1.5rem 1rem;">
-        <ul class="nav flex-column">
-            <li class="nav-item">
-                <a class="nav-link" href="{{ url_for('logout') }}"><i class="fas fa-sign-out-alt"></i> Logout</a>
-            </li>
-        </ul>
-    </nav>
-
-    <!-- ===== MAIN CONTENT ===== -->
-    <div class="main-content">
-
-        <!-- Top Navbar -->
-        <div class="top-navbar">
-            <div>
-                <button class="sidebar-toggle" id="sidebarToggle" aria-label="Toggle sidebar">
-                    <i class="fas fa-bars"></i>
-                </button>
-                <span class="ms-2 d-none d-sm-inline fw-semibold">AI Mail Assistant</span>
-            </div>
-            <div class="search-box d-none d-md-block">
-                <i class="fas fa-search"></i>
-                <input type="text" placeholder="Search emails...">
-            </div>
-            <div class="nav-icons">
-                <a href="#" class="text-decoration-none"><i class="far fa-bell"></i><span class="badge">3</span></a>
-                <a href="#" class="text-decoration-none"><i class="far fa-envelope"></i><span class="badge">5</span></a>
-                <a href="#" class="text-decoration-none"><i class="far fa-user-circle"></i></a>
-            </div>
-        </div>
-
-        <!-- ===== EMAIL CONTAINER ===== -->
-        <div class="email-container">
-
-            <!-- ===== EMAIL SIDEBAR (Inbox List) ===== -->
-            <div class="email-sidebar">
-                <div class="email-list-header">
-                    <h6><i class="fas fa-inbox me-2"></i>Inbox</h6>
-                    <span class="badge bg-primary">{{ emails|length if emails else 0 }}</span>
-                </div>
-                <div class="email-list" id="emailList">
-                    <!-- ===== JINJA2 LOOP FOR EMAILS ===== -->
-                    {% for email in emails %}
-                    <div class="email-item {% if loop.first %}active{% endif %}" 
-                         data-email-id="{{ email.id }}"
-                         onclick="selectEmail(this, '{{ email.id }}')">
-                        <div class="d-flex justify-content-between align-items-start">
-                            <span class="email-sender">{{ email.from }}</span>
-                            <span class="email-date">{{ email.date }}</span>
-                        </div>
-                        <div class="email-subject">{{ email.subject }}</div>
-                        <div class="email-preview">{{ email.preview }}</div>
-                        <div class="email-meta">
-                            <span class="email-badge">{{ email.category }}</span>
-                            <span class="email-priority {{ email.priority_class }}">
-                                {{ email.priority }}
-                            </span>
-                        </div>
-                    </div>
-                    {% else %}
-                    <div class="empty-state p-4">
-                        <i class="fas fa-inbox"></i>
-                        <p>No emails yet</p>
-                    </div>
-                    {% endfor %}
-                </div>
-            </div>
-
-            <!-- ===== EMAIL DETAIL PANEL ===== -->
-            <div class="email-detail" id="emailDetail">
-                {% if emails %}
-                <!-- First email detail (default) -->
-                <div class="detail-header">
-                    <div class="email-from">
-                        <i class="far fa-user me-1"></i> {{ emails[0].from }}
-                    </div>
-                    <div class="email-subject-detail">{{ emails[0].subject }}</div>
-                    <div class="d-flex gap-2 mt-1">
-                        <span class="badge bg-secondary">{{ emails[0].category }}</span>
-                        <span class="badge {{ emails[0].priority_class }}">{{ emails[0].priority }}</span>
-                    </div>
-                </div>
-                <div class="detail-body" id="detailBody">
-                    <p>{{ emails[0].body }}</p>
-
-                    <!-- ===== AI INSIGHTS PANEL ===== -->
-                    <div class="ai-insights">
-                        <div class="ai-header">
-                            <i class="fas fa-robot"></i> AI SUMMARY
-                        </div>
-                        <div class="ai-summary">
-                            {{ emails[0].ai_summary }}
-                        </div>
-
-                        <div>
-                            <span class="ai-tag supplier">🏭 {{ emails[0].category }}</span>
-                            <span class="ai-tag priority-{{ emails[0].priority_class.split('-')[1] if emails[0].priority_class else 'high' }}">
-                                {{ '🔴 High' if emails[0].priority == 'High' else '🟡 Medium' if emails[0].priority == 'Medium' else '🔵 Low' }}
-                            </span>
-                        </div>
-
-                        <ul class="key-info">
-                            {% for item in emails[0].key_info %}
-                            <li><i class="fas fa-circle-check"></i> {{ item }}</li>
-                            {% endfor %}
-                        </ul>
-
-                        <div class="ai-suggestions">
-                            <div class="fw-semibold mb-1">🤖 AI SUGGESTIONS</div>
-                            {% for suggestion in emails[0].suggestions %}
-                            <div class="suggestion-item">
-                                <i class="fas fa-{{ suggestion.icon }}"></i> {{ suggestion.text }}
-                            </div>
-                            {% endfor %}
-                        </div>
-
-                        <div class="ai-actions">
-                            <button class="btn btn-primary btn-sm">
-                                <i class="fas fa-tasks me-1"></i>Create Task
-                            </button>
-                            <button class="btn btn-outline-primary btn-sm">
-                                <i class="fas fa-reply me-1"></i>Reply with AI
-                            </button>
-                            <button class="btn btn-outline-secondary btn-sm">
-                                <i class="fas fa-times me-1"></i>Ignore
-                            </button>
-                        </div>
-                    </div>
-                </div>
-                {% else %}
-                <!-- Empty state -->
-                <div class="empty-state">
-                    <i class="fas fa-envelope-open-text"></i>
-                    <h5>Select an email</h5>
-                    <p class="text-muted">Choose an email from the list to view details</p>
-                </div>
-                {% endif %}
-            </div>
-
-        </div>
+{% block content %}
+<div class="ai-input-wrapper">
+  <div class="ai-card">
+    <div class="ai-header">
+      <i class="fas fa-envelope text-primary me-2"></i>
+      <span>AI Email Assistant</span>
+      <span class="badge bg-primary ms-2">v1.0</span>
     </div>
 
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <div class="row">
+      <div class="col-md-12">
+        <div class="alert alert-info">
+          <i class="fas fa-info-circle me-2"></i>
+          Describe the email you want to write, and the AI will generate a professional draft for you.
+        </div>
+      </div>
+    </div>
 
-    <script>
-        // Sidebar toggle
-        document.getElementById('sidebarToggle').addEventListener('click', function() {
-            document.getElementById('sidebar').classList.toggle('show');
-        });
+    <form action="{{ url_for('ai_mail_assistant') }}" method="POST">
+      <div class="row g-3">
+        <div class="col-md-12">
+          <label for="emailSubject" class="form-label fw-semibold">Email Subject</label>
+          <input type="text" class="form-control" id="emailSubject" name="subject" placeholder="Enter email subject..." required>
+        </div>
+        <div class="col-md-12">
+          <label for="emailPrompt" class="form-label fw-semibold">What kind of email do you need?</label>
+          <textarea class="form-control ai-textarea" id="emailPrompt" name="prompt" rows="4" placeholder="Example: Write a professional follow-up email to a client about the project deadline..." required></textarea>
+        </div>
+        <div class="col-md-12">
+          <label for="emailTone" class="form-label fw-semibold">Tone</label>
+          <select class="form-select" id="emailTone" name="tone">
+            <option value="professional">Professional</option>
+            <option value="friendly">Friendly</option>
+            <option value="formal">Formal</option>
+            <option value="casual">Casual</option>
+            <option value="persuasive">Persuasive</option>
+          </select>
+        </div>
+        <div class="col-md-12">
+          <button type="submit" class="btn btn-primary btn-submit">
+            <i class="fas fa-magic me-2"></i>Generate Email
+          </button>
+        </div>
+      </div>
+    </form>
 
-        // ===== EMAIL SELECTION =====
-        function selectEmail(element, emailId) {
-            // Remove active class from all email items
-            document.querySelectorAll('.email-item').forEach(item => {
-                item.classList.remove('active');
-            });
-            // Add active class to clicked item
-            element.classList.add('active');
+    {% if generated_email %}
+    <div class="row mt-4">
+      <div class="col-md-12">
+        <div class="card">
+          <div class="card-header bg-success text-white">
+            <i class="fas fa-check-circle me-2"></i>Generated Email Draft
+          </div>
+          <div class="card-body">
+            <h6><strong>Subject:</strong> {{ email_subject }}</h6>
+            <hr>
+            <div class="email-content" style="white-space: pre-wrap; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.8;">
+              {{ generated_email }}
+            </div>
+            <hr>
+            <div class="mt-3">
+              <button class="btn btn-outline-primary" onclick="copyEmail()">
+                <i class="fas fa-copy me-1"></i>Copy to Clipboard
+              </button>
+              <button class="btn btn-outline-success ms-2" onclick="downloadEmail()">
+                <i class="fas fa-download me-1"></i>Download as .txt
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% endif %}
+  </div>
+</div>
 
-            // In a real app, you'd fetch the email data via AJAX using emailId
-            // For demo, we just update the detail panel with the clicked email's data
-            const row = element;
-            const sender = row.querySelector('.email-sender').textContent;
-            const subject = row.querySelector('.email-subject').textContent;
-            const preview = row.querySelector('.email-preview').textContent;
-            const date = row.querySelector('.email-date').textContent;
-            const category = row.querySelector('.email-badge').textContent;
-            const priority = row.querySelector('.email-priority').textContent;
-            const priorityClass = row.querySelector('.email-priority').className.split(' ').filter(c => c.startsWith('priority'))[0] || 'priority-high';
+<style>
+  .email-content {
+    background: #f8f9fa;
+    padding: 1rem;
+    border-radius: 8px;
+    border-left: 4px solid #28a745;
+  }
+</style>
 
-            // Update the detail panel (simplified for demo)
-            const detailPanel = document.getElementById('emailDetail');
-            detailPanel.innerHTML = `
-                <div class="detail-header">
-                    <div class="email-from">
-                        <i class="far fa-user me-1"></i> ${sender}
-                    </div>
-                    <div class="email-subject-detail">${subject}</div>
-                    <div class="d-flex gap-2 mt-1">
-                        <span class="badge bg-secondary">${category}</span>
-                        <span class="badge ${priorityClass}">${priority}</span>
-                    </div>
-                </div>
-                <div class="detail-body" id="detailBody">
-                    <p>${preview}</p>
-                    <div class="ai-insights">
-                        <div class="ai-header">
-                            <i class="fas fa-robot"></i> AI SUMMARY
-                        </div>
-                        <div class="ai-summary">
-                            The supplier has informed us that the delivery will be delayed by 3 days.
-                        </div>
-                        <div>
-                            <span class="ai-tag supplier">🏭 ${category}</span>
-                            <span class="ai-tag ${priorityClass}">${priority}</span>
-                        </div>
-                        <ul class="key-info">
-                            <li><i class="fas fa-circle-check"></i> Material: Steel</li>
-                            <li><i class="fas fa-circle-check"></i> Expected delay: 3 days</li>
-                            <li><i class="fas fa-circle-check"></i> Supplier: ${sender}</li>
-                        </ul>
-                        <div class="ai-suggestions">
-                            <div class="fw-semibold mb-1">🤖 AI SUGGESTIONS</div>
-                            <div class="suggestion-item"><i class="fas fa-exclamation-triangle"></i> Check current steel inventory</div>
-                            <div class="suggestion-item"><i class="fas fa-exclamation-triangle"></i> Check production schedule</div>
-                            <div class="suggestion-item"><i class="fas fa-lightbulb"></i> Consider contacting another supplier</div>
-                        </div>
-                        <div class="ai-actions">
-                            <button class="btn btn-primary btn-sm"><i class="fas fa-tasks me-1"></i>Create Task</button>
-                            <button class="btn btn-outline-primary btn-sm"><i class="fas fa-reply me-1"></i>Reply with AI</button>
-                            <button class="btn btn-outline-secondary btn-sm"><i class="fas fa-times me-1"></i>Ignore</button>
-                        </div>
-                    </div>
-                </div>
-            `;
-        }
-    </script>
+<script>
+  function copyEmail() {
+    const content = document.querySelector('.email-content');
+    if (content) {
+      const text = content.textContent;
+      navigator.clipboard.writeText(text).then(() => {
+        alert('Email copied to clipboard!');
+      }).catch(() => {
+        // Fallback
+        const range = document.createRange();
+        range.selectNode(content);
+        window.getSelection().removeAllRanges();
+        window.getSelection().addRange(range);
+        document.execCommand('copy');
+        alert('Email copied to clipboard!');
+      });
+    }
+  }
 
-</body>
-</html>
+  function downloadEmail() {
+    const content = document.querySelector('.email-content');
+    const subject = document.getElementById('emailSubject')?.value || 'email';
+    if (content) {
+      const text = content.textContent;
+      const blob = new Blob([text], { type: 'text/plain' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${subject}_draft.txt`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+  }
+</script>
+{% endblock %}
