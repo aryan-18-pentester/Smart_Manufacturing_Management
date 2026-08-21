@@ -174,13 +174,13 @@ def Machines():
     total_value = result if result is not None else 0.0
 
     if request.method == "POST":
-        item_id = request.form.get("item_id")
+        item_id = request.form.get('item_id', type=int)
         name = request.form.get('name')
         quantity = request.form.get('quantity')
         price = request.form.get('price')
 
         if item_id:
-            record = Data.query.filter_by(id=item_id).first_or_404()
+            record = Data.query.filter_by(id=item_id,user_id=current_user.id).first_or_404()
             record.name = name
             record.quantity = quantity
             record.price = price
