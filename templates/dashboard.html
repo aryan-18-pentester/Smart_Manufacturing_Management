@@ -90,18 +90,20 @@
             </tr>
           </thead>
           <tbody>
-            {% for order in recent_orders %}
+            {% for order in orders %}
+            
             <tr>
               <td>{{ order.id }}</td>
               <td>{{ order.customer_name }}</td>
-              <td>{{ order.machine_name }}</td>
-              <td>${{ "%.2f"|format(order.total) }}</td>
+              <td>{{ order.data.name }}</td>
+              {# <td>${{ "%.2f"|format(order.total) }}</td> #}
               <td>
                 <span class="badge badge-status 
                   {% if order.status == 'Pending' %}bg-warning text-dark
                   {% elif order.status == 'Shipped' %}bg-info text-white
                   {% elif order.status == 'Delivered' %}bg-success text-white
                   {% else %}bg-secondary text-white{% endif %}">
+                  {# endblock #}
                   {{ order.status }}
                 </span>
               </td>
@@ -110,7 +112,7 @@
             {% else %}
             <tr>
               <td colspan="6" class="text-center py-4 text-muted">No recent orders</td>
-            </tr>
+            </tr> 
             {% endfor %}
           </tbody>
         </table>

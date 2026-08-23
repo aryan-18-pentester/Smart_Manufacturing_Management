@@ -22,6 +22,8 @@ login_manager.login_view = 'login'
 # ── User model ─────────────────────────────────────────────────────────────────
 class User(UserMixin, db.Model):
     id            = db.Column(db.Integer, primary_key=True)
+    first_name    = db.Column(db.String(80), nullable=False)
+    last_name     = db.Column(db.String(80), nullable=False)
     username      = db.Column(db.String(80), unique=True, nullable=False)
     password_hash = db.Column(db.String(200), nullable=False)
     def __repr__(self):
@@ -35,8 +37,8 @@ class Data(db.Model):
     price = db.Column(db.Integer, nullable=False)
     quantity = db.Column(db.Integer, nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-
-
+    
+    orders = db.relationship("Order", backref="data")
 #-----Orders_Model------------
 class Order(db.Model):
     id            = db.Column(db.Integer, primary_key=True)
@@ -46,6 +48,7 @@ class Order(db.Model):
     unit_price = db.Column(db.Float, nullable=False)
     due_date = db.Column(db.DateTime, nullable=True) 
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    name = db.Column(db.String(80), db.ForeignKey('data.name'))
     notes = db.Column(db.Text)
 
 
@@ -68,6 +71,8 @@ def register():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
+        first_name = request.form['first_name']
+        last_name = request.form['last_name']
         user = User(username=username, password_hash=generate_password_hash(password))
         if user.query.filter_by(username=username).first():
             flash("Username already exists.")
@@ -75,7 +80,9 @@ def register():
 
 # Create and save the new user
         new_user = User(username=username,
-password_hash=generate_password_hash(password))
+password_hash=generate_password_hash(password),
+first_name=first_name,
+last_name=last_name)
         db.session.add(new_user)
         db.session.commit()
 
@@ -107,7 +114,10 @@ def logout():
 @app.route('/')
 @login_required
 def dashboard():
-    return render_template('dashboard.html', active='dashboard')
+    total_users = User.query.count()
+    users_data = User.query.all()
+    orders = Order.query.all()
+    return render_template('dashboard.html', total_users=total_users,orders=orders,users_data=users_data)
 
 
 
