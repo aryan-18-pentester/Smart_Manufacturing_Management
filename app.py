@@ -103,6 +103,7 @@ def logout():
     logout_user()
     return redirect(url_for('login'))
 
+#------dashboard-------------
 @app.route('/')
 @login_required
 def dashboard():
@@ -268,6 +269,33 @@ def orders():
         machines=inventory_items
     )
 
+
+
+# ── ai_mail_assistant ─────────────────────────────────────────────────────────────────────
+@app.route('/ai_mail_assistant')
+@login_required
+def ai_mail_assistant():
+    return render_template('ai_mail_assistant.html')
+
+
+
+# ── notifications ─────────────────────────────────────────────────────────────────────
+@app.route('/notifications')
+@login_required
+def notifications():
+    return render_template('notifications.html')
+
+
+@app.route('/settings')
+@login_required
+def settings():
+    return render_template('settings.html')
+
+
+@app.route('/profile')
+@login_required
+def profile():
+    return render_template('profile.html')
 
 # ── Run ────────────────────────────────────────────────────────────────────────
 if __name__ == '__main__':

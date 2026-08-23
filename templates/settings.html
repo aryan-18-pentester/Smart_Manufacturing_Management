@@ -1,0 +1,251 @@
+{% extends "base.html" %}
+
+{% block title %}Settings - FlaskDash{% endblock %}
+{% block page_title %}Settings{% endblock %}
+
+{% block content %}
+<div class="settings-container">
+  <div class="row g-4">
+    <!-- ===== SIDEBAR NAVIGATION ===== -->
+    <div class="col-lg-3">
+      <div class="settings-sidebar">
+        <div class="list-group list-group-flush">
+          <a href="#profile" class="list-group-item list-group-item-action active" data-section="profile">
+            <i class="fas fa-user me-2"></i>Profile
+          </a>
+          <a href="#security" class="list-group-item list-group-item-action" data-section="security">
+            <i class="fas fa-shield-alt me-2"></i>Security
+          </a>
+          <a href="#preferences" class="list-group-item list-group-item-action" data-section="preferences">
+            <i class="fas fa-sliders-h me-2"></i>Preferences
+          </a>
+          <a href="#danger" class="list-group-item list-group-item-action text-danger" data-section="danger">
+            <i class="fas fa-exclamation-triangle me-2"></i>Danger Zone
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== SETTINGS CONTENT ===== -->
+    <div class="col-lg-9">
+      <div class="settings-content">
+        
+        <!-- ===== PROFILE SECTION ===== -->
+        <div class="settings-section active" id="profile">
+          <h5 class="mb-3"><i class="fas fa-user text-primary me-2"></i>Profile</h5>
+          <form action="#" method="POST">
+            <div class="row g-3">
+              <div class="col-md-6">
+                <label for="username" class="form-label fw-semibold">Username</label>
+                <input type="text" class="form-control" id="username" name="username" value="{{ current_user.username }}" required>
+              </div>
+              <div class="col-md-6">
+                <label for="email" class="form-label fw-semibold">Email</label>
+                <input type="email" class="form-control" id="email" name="email" value="{{ current_user.email if current_user.email else 'user@example.com' }}" required>
+              </div>
+              <div class="col-12">
+                <button type="submit" class="btn btn-primary">
+                  <i class="fas fa-save me-1"></i>Save
+                </button>
+              </div>
+            </div>
+          </form>
+        </div>
+
+        <!-- ===== SECURITY SECTION ===== -->
+        <div class="settings-section" id="security">
+          <h5 class="mb-3"><i class="fas fa-shield-alt text-primary me-2"></i>Security</h5>
+          <form action="#" method="POST">
+            <div class="row g-3">
+              <div class="col-md-12">
+                <label for="currentPassword" class="form-label fw-semibold">Current Password</label>
+                <input type="password" class="form-control" id="currentPassword" name="current_password" required>
+              </div>
+              <div class="col-md-6">
+                <label for="newPassword" class="form-label fw-semibold">New Password</label>
+                <input type="password" class="form-control" id="newPassword" name="new_password" required minlength="8">
+              </div>
+              <div class="col-md-6">
+                <label for="confirmPassword" class="form-label fw-semibold">Confirm Password</label>
+                <input type="password" class="form-control" id="confirmPassword" name="confirm_password" required>
+              </div>
+              <div class="col-12">
+                <button type="submit" class="btn btn-primary">
+                  <i class="fas fa-save me-1"></i>Update Password
+                </button>
+              </div>
+            </div>
+          </form>
+        </div>
+
+        <!-- ===== PREFERENCES SECTION ===== -->
+        <div class="settings-section" id="preferences">
+          <h5 class="mb-3"><i class="fas fa-sliders-h text-primary me-2"></i>Preferences</h5>
+          <form action="#" method="POST">
+            <div class="row g-3">
+              <div class="col-md-6">
+                <label for="language" class="form-label fw-semibold">Language</label>
+                <select class="form-select" id="language" name="language">
+                  <option value="en">English</option>
+                  <option value="es">Spanish</option>
+                  <option value="fr">French</option>
+                </select>
+              </div>
+              <div class="col-md-6">
+                <label for="timezone" class="form-label fw-semibold">Timezone</label>
+                <select class="form-select" id="timezone" name="timezone">
+                  <option value="UTC">UTC</option>
+                  <option value="America/New_York">Eastern Time</option>
+                  <option value="America/Chicago">Central Time</option>
+                  <option value="America/Los_Angeles">Pacific Time</option>
+                </select>
+              </div>
+              <div class="col-12">
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" id="emailNotifications" name="email_notifications" checked>
+                  <label class="form-check-label" for="emailNotifications">
+                    Receive email notifications
+                  </label>
+                </div>
+              </div>
+              <div class="col-12">
+                <button type="submit" class="btn btn-primary">
+                  <i class="fas fa-save me-1"></i>Save Preferences
+                </button>
+              </div>
+            </div>
+          </form>
+        </div>
+
+        <!-- ===== DANGER ZONE ===== -->
+        <div class="settings-section" id="danger">
+          <h5 class="mb-3 text-danger"><i class="fas fa-exclamation-triangle text-danger me-2"></i>Danger Zone</h5>
+          <div class="danger-item d-flex justify-content-between align-items-center p-3 border border-danger rounded">
+            <div>
+              <h6 class="mb-1 text-danger">Delete Account</h6>
+              <p class="text-muted small mb-0">Permanently delete your account and all data.</p>
+            </div>
+            <button class="btn btn-danger" onclick="confirmDelete()">
+              <i class="fas fa-trash me-1"></i>Delete
+            </button>
+          </div>
+        </div>
+        
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .settings-container {
+    background: #fff;
+    border-radius: 16px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  }
+
+  .settings-sidebar .list-group-item {
+    border: none;
+    padding: 0.75rem 1rem;
+    border-radius: 10px;
+    margin-bottom: 0.25rem;
+    transition: 0.2s;
+  }
+
+  .settings-sidebar .list-group-item:hover {
+    background: #f8f9fa;
+  }
+
+  .settings-sidebar .list-group-item.active {
+    background: #e7f1ff;
+    color: #007bff;
+    border-left: 3px solid #007bff;
+  }
+
+  .settings-section {
+    display: none;
+  }
+
+  .settings-section.active {
+    display: block;
+    animation: fadeIn 0.3s ease;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .danger-item {
+    background: #fff5f5;
+  }
+
+  @media (max-width: 992px) {
+    .settings-sidebar {
+      margin-bottom: 1.5rem;
+    }
+    
+    .settings-sidebar .list-group {
+      display: flex;
+      flex-direction: row;
+      overflow-x: auto;
+      gap: 0.25rem;
+    }
+    
+    .settings-sidebar .list-group-item {
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+  }
+
+  @media (max-width: 576px) {
+    .settings-container {
+      padding: 0.75rem;
+    }
+    
+    .danger-item {
+      flex-direction: column;
+      gap: 0.5rem;
+      align-items: stretch;
+    }
+  }
+</style>
+
+<script>
+  // ===== SECTION NAVIGATION =====
+  document.querySelectorAll('.settings-sidebar .list-group-item').forEach(item => {
+    item.addEventListener('click', function(e) {
+      e.preventDefault();
+      
+      document.querySelectorAll('.settings-sidebar .list-group-item').forEach(i => i.classList.remove('active'));
+      this.classList.add('active');
+      
+      const sectionId = this.getAttribute('data-section');
+      document.querySelectorAll('.settings-section').forEach(s => s.classList.remove('active'));
+      document.getElementById(sectionId).classList.add('active');
+      
+      history.pushState(null, null, '#' + sectionId);
+    });
+  });
+
+  // ===== CHECK URL HASH ON LOAD =====
+  document.addEventListener('DOMContentLoaded', function() {
+    const hash = window.location.hash.substring(1);
+    if (hash) {
+      const targetItem = document.querySelector(`.settings-sidebar .list-group-item[data-section="${hash}"]`);
+      if (targetItem) {
+        targetItem.click();
+      }
+    }
+  });
+
+  // ===== CONFIRM DELETE =====
+  function confirmDelete() {
+    if (confirm('Are you sure you want to delete your account? This action cannot be undone!')) {
+      if (confirm('Please confirm again: This will permanently delete all your data.')) {
+        window.location.href = "#";
+      }
+    }
+  }
+</script>
+{% endblock %}

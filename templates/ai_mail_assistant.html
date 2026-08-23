@@ -1,127 +1,650 @@
 {% extends "base.html" %}
 
-{% block title %}Email Assistant - FlaskDash{% endblock %}
-{% block page_title %}AI Email Assistant{% endblock %}
+{% block title %}Mail Assistant - FlaskDash{% endblock %}
+{% block page_title %}Mail Assistant{% endblock %}
 
 {% block content %}
-<div class="ai-input-wrapper">
-  <div class="ai-card">
-    <div class="ai-header">
-      <i class="fas fa-envelope text-primary me-2"></i>
-      <span>AI Email Assistant</span>
-      <span class="badge bg-primary ms-2">v1.0</span>
-    </div>
+<div class="mail-assistant-container">
+  <div class="row g-4">
+    <!-- ===== LEFT SIDEBAR - EMAIL LIST ===== -->
+    <div class="col-lg-4">
+      <div class="mail-sidebar">
+        <!-- Search Box -->
+        <div class="search-box mb-3">
+          <div class="input-group">
+            <span class="input-group-text bg-white border-end-0">
+              <i class="fas fa-search text-muted"></i>
+            </span>
+            <input type="text" class="form-control border-start-0" placeholder="Search emails..." id="emailSearch">
+          </div>
+        </div>
 
-    <div class="row">
-      <div class="col-md-12">
-        <div class="alert alert-info">
-          <i class="fas fa-info-circle me-2"></i>
-          Describe the email you want to write, and the AI will generate a professional draft for you.
+        <!-- Mail Folders -->
+        <div class="mail-folders mb-3">
+          <div class="folder-item active" data-folder="inbox">
+            <i class="fas fa-inbox me-2"></i> Inbox
+            <span class="badge bg-primary ms-auto">12</span>
+          </div>
+          <div class="folder-item" data-folder="unread">
+            <i class="fas fa-envelope me-2"></i> Unread
+            <span class="badge bg-danger ms-auto">5</span>
+          </div>
+          <div class="folder-item" data-folder="sent">
+            <i class="fas fa-paper-plane me-2"></i> Sent
+            <span class="badge bg-secondary ms-auto">8</span>
+          </div>
+          <div class="folder-item" data-folder="drafts">
+            <i class="fas fa-pencil-alt me-2"></i> Drafts
+            <span class="badge bg-warning text-dark ms-auto">3</span>
+          </div>
+          <div class="folder-item" data-folder="archive">
+            <i class="fas fa-archive me-2"></i> Archive
+            <span class="badge bg-secondary ms-auto">24</span>
+          </div>
+          <div class="folder-item" data-folder="trash">
+            <i class="fas fa-trash me-2"></i> Trash
+            <span class="badge bg-secondary ms-auto">6</span>
+          </div>
+        </div>
+
+        <!-- Email List -->
+        <div class="email-list" id="emailList">
+          <!-- Email Item 1 - Supplier -->
+          <div class="email-item active" data-id="1">
+            <div class="d-flex align-items-start">
+              <div class="avatar me-2">
+                <i class="fas fa-building text-primary"></i>
+              </div>
+              <div class="flex-grow-1">
+                <div class="d-flex justify-content-between">
+                  <strong class="sender">Supplier XYZ</strong>
+                  <small class="text-muted time">10:30 AM</small>
+                </div>
+                <div class="subject">Raw Material Delivery</div>
+                <div class="preview text-muted">Your material order will arrive...</div>
+              </div>
+              <div class="ms-2">
+                <span class="badge bg-success">Urgent</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Email Item 2 - Customer -->
+          <div class="email-item" data-id="2">
+            <div class="d-flex align-items-start">
+              <div class="avatar me-2">
+                <i class="fas fa-user text-success"></i>
+              </div>
+              <div class="flex-grow-1">
+                <div class="d-flex justify-content-between">
+                  <strong class="sender">Customer A</strong>
+                  <small class="text-muted time">9:15 AM</small>
+                </div>
+                <div class="subject">Product Inquiry</div>
+                <div class="preview text-muted">I would like to know about your...</div>
+              </div>
+              <div class="ms-2">
+                <span class="badge bg-info">New</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Email Item 3 - Manager -->
+          <div class="email-item" data-id="3">
+            <div class="d-flex align-items-start">
+              <div class="avatar me-2">
+                <i class="fas fa-user-tie text-warning"></i>
+              </div>
+              <div class="flex-grow-1">
+                <div class="d-flex justify-content-between">
+                  <strong class="sender">Manager</strong>
+                  <small class="text-muted time">Yesterday</small>
+                </div>
+                <div class="subject">Team Meeting Agenda</div>
+                <div class="preview text-muted">Please review the agenda for...</div>
+              </div>
+              <div class="ms-2">
+                <span class="badge bg-secondary">Follow-up</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Email Item 4 - Inventory Alert -->
+          <div class="email-item" data-id="4">
+            <div class="d-flex align-items-start">
+              <div class="avatar me-2">
+                <i class="fas fa-box text-danger"></i>
+              </div>
+              <div class="flex-grow-1">
+                <div class="d-flex justify-content-between">
+                  <strong class="sender">Inventory System</strong>
+                  <small class="text-muted time">Yesterday</small>
+                </div>
+                <div class="subject">Low Stock Alert</div>
+                <div class="preview text-muted">The following items are running...</div>
+              </div>
+              <div class="ms-2">
+                <span class="badge bg-danger">Critical</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Email Item 5 - Production -->
+          <div class="email-item" data-id="5">
+            <div class="d-flex align-items-start">
+              <div class="avatar me-2">
+                <i class="fas fa-industry text-primary"></i>
+              </div>
+              <div class="flex-grow-1">
+                <div class="d-flex justify-content-between">
+                  <strong class="sender">Production Team</strong>
+                  <small class="text-muted time">Yesterday</small>
+                </div>
+                <div class="subject">Production Schedule Update</div>
+                <div class="preview text-muted">The production schedule has been...</div>
+              </div>
+              <div class="ms-2">
+                <span class="badge bg-warning text-dark">Review</span>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
 
-    <form action="{{ url_for('ai_mail_assistant') }}" method="POST">
-      <div class="row g-3">
-        <div class="col-md-12">
-          <label for="emailSubject" class="form-label fw-semibold">Email Subject</label>
-          <input type="text" class="form-control" id="emailSubject" name="subject" placeholder="Enter email subject..." required>
+    <!-- ===== RIGHT PANEL ===== -->
+    <div class="col-lg-8">
+      <!-- AI Insights Panel -->
+      <div class="ai-insights-panel mb-4">
+        <div class="d-flex justify-content-between align-items-center">
+          <h6 class="mb-0">
+            <i class="fas fa-robot text-primary me-2"></i>AI Insights
+          </h6>
+          <span class="badge bg-primary">Live</span>
         </div>
-        <div class="col-md-12">
-          <label for="emailPrompt" class="form-label fw-semibold">What kind of email do you need?</label>
-          <textarea class="form-control ai-textarea" id="emailPrompt" name="prompt" rows="4" placeholder="Example: Write a professional follow-up email to a client about the project deadline..." required></textarea>
+        <div class="row g-2 mt-2">
+          <div class="col-md-4">
+            <div class="insight-card">
+              <i class="fas fa-exclamation-circle text-danger"></i>
+              <span>2 urgent emails</span>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="insight-card">
+              <i class="fas fa-box text-warning"></i>
+              <span>3 inventory emails</span>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="insight-card">
+              <i class="fas fa-tasks text-success"></i>
+              <span>1 action required</span>
+            </div>
+          </div>
         </div>
-        <div class="col-md-12">
-          <label for="emailTone" class="form-label fw-semibold">Tone</label>
-          <select class="form-select" id="emailTone" name="tone">
-            <option value="professional">Professional</option>
-            <option value="friendly">Friendly</option>
-            <option value="formal">Formal</option>
-            <option value="casual">Casual</option>
-            <option value="persuasive">Persuasive</option>
-          </select>
-        </div>
-        <div class="col-md-12">
-          <button type="submit" class="btn btn-primary btn-submit">
-            <i class="fas fa-magic me-2"></i>Generate Email
+        <div class="mt-2">
+          <button class="btn btn-sm btn-outline-primary" onclick="showSuggestions()">
+            <i class="fas fa-lightbulb me-1"></i>View Suggestions
           </button>
         </div>
       </div>
-    </form>
 
-    {% if generated_email %}
-    <div class="row mt-4">
-      <div class="col-md-12">
-        <div class="card">
-          <div class="card-header bg-success text-white">
-            <i class="fas fa-check-circle me-2"></i>Generated Email Draft
-          </div>
-          <div class="card-body">
-            <h6><strong>Subject:</strong> {{ email_subject }}</h6>
-            <hr>
-            <div class="email-content" style="white-space: pre-wrap; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.8;">
-              {{ generated_email }}
+      <!-- ===== SELECTED EMAIL VIEW ===== -->
+      <div class="email-view-panel" id="emailView">
+        <div class="email-header">
+          <div class="d-flex justify-content-between align-items-start">
+            <div>
+              <h5 class="mb-1" id="emailSubject">Raw Material Delivery</h5>
+              <div class="email-meta">
+                <span><i class="fas fa-user me-1"></i><strong id="emailSender">Supplier XYZ</strong></span>
+                <span class="ms-3"><i class="fas fa-envelope me-1"></i><span id="emailFrom">supplier@example.com</span></span>
+                <span class="ms-3"><i class="fas fa-clock me-1"></i><span id="emailTime">Today at 10:30 AM</span></span>
+              </div>
             </div>
-            <hr>
-            <div class="mt-3">
-              <button class="btn btn-outline-primary" onclick="copyEmail()">
-                <i class="fas fa-copy me-1"></i>Copy to Clipboard
-              </button>
-              <button class="btn btn-outline-success ms-2" onclick="downloadEmail()">
-                <i class="fas fa-download me-1"></i>Download as .txt
-              </button>
+            <div>
+              <span class="badge bg-success" id="emailStatus">Urgent</span>
             </div>
           </div>
         </div>
+
+        <div class="email-body" id="emailBody">
+          <p>Dear Team,</p>
+          <p>Your material order will arrive on August 25th. Please ensure the receiving area is prepared.</p>
+          <p>The shipment includes:</p>
+          <ul>
+            <li>50 units of Raw Material A</li>
+            <li>30 units of Raw Material B</li>
+            <li>20 units of Raw Material C</li>
+          </ul>
+          <p>Please confirm receipt of this email.</p>
+          <p>Best regards,<br>Supplier XYZ</p>
+        </div>
+
+        <!-- AI Summary -->
+        <div class="ai-summary mt-3">
+          <div class="d-flex align-items-start">
+            <i class="fas fa-brain text-primary me-2 mt-1"></i>
+            <div>
+              <div class="fw-semibold text-primary">🤖 AI Summary</div>
+              <p class="mb-0">Supplier confirms delivery on August 25th. Materials include 50 units of Raw Material A, 30 units of Raw Material B, and 20 units of Raw Material C.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- AI Suggestions -->
+        <div class="ai-suggestions mt-3">
+          <div class="fw-semibold mb-2">
+            <i class="fas fa-lightbulb text-warning me-1"></i>AI Suggestions
+          </div>
+          <div class="suggestion-item" onclick="applySuggestion('Update inventory arrival date')">
+            <i class="fas fa-check-circle text-primary me-2"></i>
+            Update inventory arrival date
+          </div>
+          <div class="suggestion-item" onclick="applySuggestion('Notify production team')">
+            <i class="fas fa-check-circle text-primary me-2"></i>
+            Notify production team
+          </div>
+          <div class="suggestion-item" onclick="applySuggestion('Reply to supplier')">
+            <i class="fas fa-check-circle text-primary me-2"></i>
+            Reply to supplier
+          </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="email-actions mt-3">
+          <button class="btn btn-primary" onclick="replyEmail()">
+            <i class="fas fa-reply me-1"></i>Reply
+          </button>
+          <button class="btn btn-success" onclick="createTask()">
+            <i class="fas fa-tasks me-1"></i>Create Task
+          </button>
+          <button class="btn btn-secondary" onclick="archiveEmail()">
+            <i class="fas fa-archive me-1"></i>Archive
+          </button>
+          <button class="btn btn-danger" onclick="deleteEmail()">
+            <i class="fas fa-trash me-1"></i>Delete
+          </button>
+        </div>
       </div>
     </div>
-    {% endif %}
   </div>
 </div>
 
+<!-- Styles -->
 <style>
-  .email-content {
+  /* Mail Assistant Specific Styles */
+  .mail-assistant-container {
+    background: #fff;
+    border-radius: 16px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  }
+
+  /* Left Sidebar */
+  .mail-sidebar {
+    border-right: 1px solid #e9ecef;
+    padding-right: 1rem;
+  }
+
+  .mail-sidebar .search-box {
+    margin-bottom: 1rem;
+  }
+
+  .mail-sidebar .search-box input {
+    border-radius: 30px;
+    padding-left: 2.2rem;
+  }
+
+  .mail-folders {
+    margin-bottom: 1rem;
+  }
+
+  .folder-item {
+    padding: 0.6rem 1rem;
+    border-radius: 10px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    transition: 0.2s;
+    margin-bottom: 0.25rem;
+  }
+
+  .folder-item:hover {
     background: #f8f9fa;
+  }
+
+  .folder-item.active {
+    background: #e7f1ff;
+    color: #007bff;
+    font-weight: 500;
+  }
+
+  .folder-item .badge {
+    font-weight: 500;
+  }
+
+  /* Email List */
+  .email-list {
+    max-height: 500px;
+    overflow-y: auto;
+  }
+
+  .email-list::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  .email-list::-webkit-scrollbar-thumb {
+    background: #ced4da;
+    border-radius: 10px;
+  }
+
+  .email-item {
+    padding: 0.8rem;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: 0.2s;
+    border-left: 3px solid transparent;
+    margin-bottom: 0.25rem;
+  }
+
+  .email-item:hover {
+    background: #f8f9fa;
+  }
+
+  .email-item.active {
+    background: #e7f1ff;
+    border-left-color: #007bff;
+  }
+
+  .email-item .avatar {
+    width: 36px;
+    height: 36px;
+    background: #f1f3f5;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .email-item .avatar i {
+    font-size: 1.2rem;
+  }
+
+  .email-item .sender {
+    font-size: 0.9rem;
+  }
+
+  .email-item .subject {
+    font-size: 0.85rem;
+    font-weight: 500;
+  }
+
+  .email-item .preview {
+    font-size: 0.8rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .email-item .time {
+    font-size: 0.7rem;
+  }
+
+  /* AI Insights Panel */
+  .ai-insights-panel {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border-radius: 12px;
     padding: 1rem;
+    border: 1px solid #dee2e6;
+  }
+
+  .insight-card {
+    background: #fff;
+    padding: 0.5rem 0.8rem;
     border-radius: 8px;
-    border-left: 4px solid #28a745;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.85rem;
+    border: 1px solid #e9ecef;
+  }
+
+  .insight-card i {
+    font-size: 1rem;
+  }
+
+  /* Email View Panel */
+  .email-view-panel {
+    background: #fff;
+    border-radius: 12px;
+    padding: 1.2rem;
+    border: 1px solid #e9ecef;
+    min-height: 400px;
+  }
+
+  .email-header {
+    border-bottom: 1px solid #e9ecef;
+    padding-bottom: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .email-meta {
+    font-size: 0.85rem;
+    color: #6c757d;
+  }
+
+  .email-body {
+    line-height: 1.8;
+    padding: 0.5rem 0;
+  }
+
+  .email-body p {
+    margin-bottom: 0.5rem;
+  }
+
+  .email-body ul {
+    padding-left: 1.5rem;
+    margin-bottom: 0.5rem;
+  }
+
+  /* AI Summary */
+  .ai-summary {
+    background: #f0f7ff;
+    border-radius: 10px;
+    padding: 0.8rem 1rem;
+    border-left: 4px solid #007bff;
+  }
+
+  /* AI Suggestions */
+  .ai-suggestions {
+    background: #fff8e6;
+    border-radius: 10px;
+    padding: 0.8rem 1rem;
+    border: 1px solid #ffecb5;
+  }
+
+  .suggestion-item {
+    padding: 0.4rem 0;
+    cursor: pointer;
+    transition: 0.2s;
+    border-radius: 6px;
+    padding: 0.4rem 0.5rem;
+  }
+
+  .suggestion-item:hover {
+    background: #fff3cd;
+  }
+
+  .suggestion-item i {
+    color: #ffc107;
+  }
+
+  /* Email Actions */
+  .email-actions {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    padding-top: 1rem;
+    border-top: 1px solid #e9ecef;
+  }
+
+  /* Responsive */
+  @media (max-width: 992px) {
+    .mail-sidebar {
+      border-right: none;
+      padding-right: 0;
+      margin-bottom: 1.5rem;
+    }
+    
+    .email-list {
+      max-height: 300px;
+    }
+  }
+
+  @media (max-width: 576px) {
+    .mail-assistant-container {
+      padding: 0.75rem;
+    }
+    
+    .email-item {
+      padding: 0.5rem;
+    }
+    
+    .email-actions {
+      flex-direction: column;
+    }
+    
+    .email-actions .btn {
+      width: 100%;
+    }
+    
+    .insight-card {
+      font-size: 0.75rem;
+      padding: 0.3rem 0.5rem;
+    }
   }
 </style>
 
+<!-- JavaScript -->
 <script>
-  function copyEmail() {
-    const content = document.querySelector('.email-content');
-    if (content) {
-      const text = content.textContent;
-      navigator.clipboard.writeText(text).then(() => {
-        alert('Email copied to clipboard!');
-      }).catch(() => {
-        // Fallback
-        const range = document.createRange();
-        range.selectNode(content);
-        window.getSelection().removeAllRanges();
-        window.getSelection().addRange(range);
-        document.execCommand('copy');
-        alert('Email copied to clipboard!');
+  document.addEventListener('DOMContentLoaded', function() {
+    // Email item click - show email content
+    document.querySelectorAll('.email-item').forEach(item => {
+      item.addEventListener('click', function() {
+        // Remove active class from all items
+        document.querySelectorAll('.email-item').forEach(el => el.classList.remove('active'));
+        this.classList.add('active');
+        
+        // Update email view with sample data
+        const sender = this.querySelector('.sender').textContent;
+        const subject = this.querySelector('.subject').textContent;
+        const time = this.querySelector('.time').textContent;
+        const badge = this.querySelector('.badge').textContent;
+        const badgeClass = this.querySelector('.badge').className;
+        
+        document.getElementById('emailSender').textContent = sender;
+        document.getElementById('emailSubject').textContent = subject;
+        document.getElementById('emailTime').textContent = time;
+        document.getElementById('emailStatus').textContent = badge;
+        document.getElementById('emailStatus').className = badgeClass;
+        
+        // Update email body based on selection (demo)
+        const emailBody = document.getElementById('emailBody');
+        if (subject.includes('Delivery')) {
+          emailBody.innerHTML = `
+            <p>Dear Team,</p>
+            <p>Your material order will arrive on August 25th. Please ensure the receiving area is prepared.</p>
+            <p>The shipment includes:</p>
+            <ul>
+              <li>50 units of Raw Material A</li>
+              <li>30 units of Raw Material B</li>
+              <li>20 units of Raw Material C</li>
+            </ul>
+            <p>Please confirm receipt of this email.</p>
+            <p>Best regards,<br>Supplier XYZ</p>
+          `;
+        } else if (subject.includes('Inquiry')) {
+          emailBody.innerHTML = `
+            <p>Dear Support Team,</p>
+            <p>I would like to know about your product pricing and availability for the following items:</p>
+            <ul>
+              <li>Product Model X100</li>
+              <li>Product Model Y200</li>
+            </ul>
+            <p>Please send me the catalog and pricing information at your earliest convenience.</p>
+            <p>Thank you,<br>Customer A</p>
+          `;
+        } else {
+          emailBody.innerHTML = `
+            <p>Hi Team,</p>
+            <p>Please review the agenda for our upcoming meeting on Friday.</p>
+            <p>Agenda items:</p>
+            <ul>
+              <li>Project updates</li>
+              <li>Resource allocation</li>
+              <li>Next quarter planning</li>
+            </ul>
+            <p>Let me know if you have any additional items to add.</p>
+            <p>Best regards,<br>Manager</p>
+          `;
+        }
       });
+    });
+
+    // Click first email by default
+    document.querySelector('.email-item.active')?.click();
+  });
+
+  // Action functions
+  function replyEmail() {
+    alert('Reply functionality will be implemented in the backend.');
+  }
+
+  function createTask() {
+    alert('Task creation will be implemented in the backend.');
+  }
+
+  function archiveEmail() {
+    alert('Archive functionality will be implemented in the backend.');
+  }
+
+  function deleteEmail() {
+    if (confirm('Are you sure you want to delete this email?')) {
+      alert('Email will be deleted in the backend.');
     }
   }
 
-  function downloadEmail() {
-    const content = document.querySelector('.email-content');
-    const subject = document.getElementById('emailSubject')?.value || 'email';
-    if (content) {
-      const text = content.textContent;
-      const blob = new Blob([text], { type: 'text/plain' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `${subject}_draft.txt`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-    }
+  function showSuggestions() {
+    alert('AI suggestions will be fetched from the backend.');
   }
+
+  function applySuggestion(suggestion) {
+    alert(`Suggestion applied: ${suggestion}\n\nThis will be integrated with the backend.`);
+  }
+
+  // Search functionality
+  document.getElementById('emailSearch').addEventListener('keyup', function() {
+    const filter = this.value.toLowerCase();
+    const emails = document.querySelectorAll('.email-item');
+    
+    emails.forEach(email => {
+      const text = email.textContent.toLowerCase();
+      if (text.includes(filter)) {
+        email.style.display = '';
+      } else {
+        email.style.display = 'none';
+      }
+    });
+  });
+
+  // Folder click
+  document.querySelectorAll('.folder-item').forEach(folder => {
+    folder.addEventListener('click', function() {
+      document.querySelectorAll('.folder-item').forEach(f => f.classList.remove('active'));
+      this.classList.add('active');
+      alert(`Filtering emails in: ${this.textContent.trim()}`);
+    });
+  });
 </script>
 {% endblock %}

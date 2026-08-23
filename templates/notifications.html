@@ -1,0 +1,476 @@
+{% extends "base.html" %}
+
+{% block title %}Notifications - FlaskDash{% endblock %}
+{% block page_title %}Notifications{% endblock %}
+
+{% block content %}
+<div class="notifications-page">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h4 class="mb-0">
+      <i class="fas fa-bell text-primary me-2"></i>Notifications
+      <span class="badge bg-primary ms-2" id="notificationCount">12</span>
+    </h4>
+    <div>
+      <button class="btn btn-outline-primary btn-sm me-2" onclick="markAllAsRead()">
+        <i class="fas fa-check-double me-1"></i>Mark all as read
+      </button>
+      <button class="btn btn-outline-secondary btn-sm" onclick="clearAll()">
+        <i class="fas fa-trash me-1"></i>Clear all
+      </button>
+    </div>
+  </div>
+
+  <!-- Filter Tabs -->
+  <ul class="nav nav-tabs mb-3" id="notificationTabs">
+    <li class="nav-item">
+      <a class="nav-link active" data-filter="all" href="#">All</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" data-filter="unread" href="#">Unread</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" data-filter="read" href="#">Read</a>
+    </li>
+  </ul>
+
+  <!-- Notification List -->
+  <div class="notification-list" id="notificationList">
+    <!-- Notification Item 1 - Urgent -->
+    <div class="notification-item unread" data-id="1">
+      <div class="notification-icon bg-danger">
+        <i class="fas fa-exclamation-triangle text-white"></i>
+      </div>
+      <div class="notification-content">
+        <div class="notification-header">
+          <strong>Low Stock Alert</strong>
+          <span class="notification-time">5 minutes ago</span>
+        </div>
+        <p class="notification-message">Raw Material A is running low. Only 5 units remaining!</p>
+        <div class="notification-actions">
+          <button class="btn btn-sm btn-primary" onclick="takeAction(1)">View Inventory</button>
+          <button class="btn btn-sm btn-outline-secondary" onclick="dismissNotification(1)">Dismiss</button>
+        </div>
+      </div>
+      <div class="notification-status">
+        <span class="badge bg-danger">Urgent</span>
+        <button class="btn btn-sm btn-link text-muted mark-read-btn" onclick="markAsRead(1)" title="Mark as read">
+          <i class="fas fa-check"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Notification Item 2 - New Order -->
+    <div class="notification-item unread" data-id="2">
+      <div class="notification-icon bg-success">
+        <i class="fas fa-shopping-cart text-white"></i>
+      </div>
+      <div class="notification-content">
+        <div class="notification-header">
+          <strong>New Order Received</strong>
+          <span class="notification-time">15 minutes ago</span>
+        </div>
+        <p class="notification-message">Order #ORD-2024-001 has been placed by Customer A. Total: $1,250.00</p>
+        <div class="notification-actions">
+          <button class="btn btn-sm btn-primary" onclick="takeAction(2)">View Order</button>
+          <button class="btn btn-sm btn-outline-secondary" onclick="dismissNotification(2)">Dismiss</button>
+        </div>
+      </div>
+      <div class="notification-status">
+        <span class="badge bg-success">New</span>
+        <button class="btn btn-sm btn-link text-muted mark-read-btn" onclick="markAsRead(2)" title="Mark as read">
+          <i class="fas fa-check"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Notification Item 3 - AI Suggestion -->
+    <div class="notification-item unread" data-id="3">
+      <div class="notification-icon bg-info">
+        <i class="fas fa-robot text-white"></i>
+      </div>
+      <div class="notification-content">
+        <div class="notification-header">
+          <strong>AI Recommendation</strong>
+          <span class="notification-time">1 hour ago</span>
+        </div>
+        <p class="notification-message">Based on your inventory trends, we recommend ordering more Raw Material B.</p>
+        <div class="notification-actions">
+          <button class="btn btn-sm btn-primary" onclick="takeAction(3)">View Recommendation</button>
+          <button class="btn btn-sm btn-outline-secondary" onclick="dismissNotification(3)">Dismiss</button>
+        </div>
+      </div>
+      <div class="notification-status">
+        <span class="badge bg-info">AI</span>
+        <button class="btn btn-sm btn-link text-muted mark-read-btn" onclick="markAsRead(3)" title="Mark as read">
+          <i class="fas fa-check"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Notification Item 4 - Message -->
+    <div class="notification-item read" data-id="4">
+      <div class="notification-icon bg-warning">
+        <i class="fas fa-envelope text-white"></i>
+      </div>
+      <div class="notification-content">
+        <div class="notification-header">
+          <strong>New Message</strong>
+          <span class="notification-time">2 hours ago</span>
+        </div>
+        <p class="notification-message">Manager: "Please review the production schedule for next week."</p>
+        <div class="notification-actions">
+          <button class="btn btn-sm btn-primary" onclick="takeAction(4)">Reply</button>
+          <button class="btn btn-sm btn-outline-secondary" onclick="dismissNotification(4)">Dismiss</button>
+        </div>
+      </div>
+      <div class="notification-status">
+        <span class="badge bg-secondary">Read</span>
+        <button class="btn btn-sm btn-link text-muted mark-read-btn" onclick="markAsRead(4)" title="Mark as read">
+          <i class="fas fa-check-circle text-success"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Notification Item 5 - System Update -->
+    <div class="notification-item read" data-id="5">
+      <div class="notification-icon bg-secondary">
+        <i class="fas fa-server text-white"></i>
+      </div>
+      <div class="notification-content">
+        <div class="notification-header">
+          <strong>System Update</strong>
+          <span class="notification-time">Yesterday</span>
+        </div>
+        <p class="notification-message">System maintenance completed successfully. All systems are operational.</p>
+        <div class="notification-actions">
+          <button class="btn btn-sm btn-outline-secondary" onclick="dismissNotification(5)">Dismiss</button>
+        </div>
+      </div>
+      <div class="notification-status">
+        <span class="badge bg-secondary">Read</span>
+        <button class="btn btn-sm btn-link text-muted mark-read-btn" onclick="markAsRead(5)" title="Mark as read">
+          <i class="fas fa-check-circle text-success"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Notification Item 6 - Task Assigned -->
+    <div class="notification-item unread" data-id="6">
+      <div class="notification-icon bg-primary">
+        <i class="fas fa-tasks text-white"></i>
+      </div>
+      <div class="notification-content">
+        <div class="notification-header">
+          <strong>Task Assigned</strong>
+          <span class="notification-time">Yesterday</span>
+        </div>
+        <p class="notification-message">You have been assigned a new task: "Update inventory records for Q3."</p>
+        <div class="notification-actions">
+          <button class="btn btn-sm btn-primary" onclick="takeAction(6)">View Task</button>
+          <button class="btn btn-sm btn-outline-secondary" onclick="dismissNotification(6)">Dismiss</button>
+        </div>
+      </div>
+      <div class="notification-status">
+        <span class="badge bg-primary">Assigned</span>
+        <button class="btn btn-sm btn-link text-muted mark-read-btn" onclick="markAsRead(6)" title="Mark as read">
+          <i class="fas fa-check"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Load More -->
+  <div class="text-center mt-3">
+    <button class="btn btn-outline-primary btn-sm" onclick="loadMore()">
+      <i class="fas fa-sync me-1"></i>Load more
+    </button>
+  </div>
+</div>
+
+<style>
+  .notifications-page {
+    background: #fff;
+    border-radius: 16px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  }
+
+  .notification-item {
+    display: flex;
+    padding: 1rem;
+    border-radius: 12px;
+    border: 1px solid #e9ecef;
+    margin-bottom: 0.75rem;
+    transition: all 0.3s ease;
+    background: #fff;
+  }
+
+  .notification-item:hover {
+    box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+    transform: translateY(-2px);
+  }
+
+  .notification-item.unread {
+    background: #f8f9ff;
+    border-left: 4px solid #007bff;
+  }
+
+  .notification-item.read {
+    background: #fff;
+    border-left: 4px solid #dee2e6;
+  }
+
+  .notification-item .notification-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-right: 1rem;
+    font-size: 1rem;
+  }
+
+  .notification-item .notification-content {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .notification-item .notification-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.25rem;
+  }
+
+  .notification-item .notification-header strong {
+    font-size: 0.95rem;
+  }
+
+  .notification-item .notification-time {
+    font-size: 0.75rem;
+    color: #6c757d;
+    flex-shrink: 0;
+    margin-left: 0.5rem;
+  }
+
+  .notification-item .notification-message {
+    color: #495057;
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+  }
+
+  .notification-item .notification-actions {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  .notification-item .notification-status {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.25rem;
+    flex-shrink: 0;
+    margin-left: 0.5rem;
+  }
+
+  .notification-item .mark-read-btn {
+    padding: 0;
+    font-size: 0.85rem;
+    opacity: 0.5;
+    transition: opacity 0.2s;
+  }
+
+  .notification-item .mark-read-btn:hover {
+    opacity: 1;
+  }
+
+  .notification-item .badge {
+    font-weight: 500;
+  }
+
+  .nav-tabs .nav-link {
+    color: #6c757d;
+    border: none;
+    padding: 0.5rem 1rem;
+    font-weight: 500;
+  }
+
+  .nav-tabs .nav-link.active {
+    color: #007bff;
+    background: none;
+    border-bottom: 3px solid #007bff;
+  }
+
+  .nav-tabs .nav-link:hover {
+    color: #007bff;
+    background: none;
+  }
+
+  @media (max-width: 576px) {
+    .notification-item {
+      flex-direction: column;
+      padding: 0.75rem;
+    }
+
+    .notification-item .notification-status {
+      flex-direction: row;
+      align-items: center;
+      margin-left: 0;
+      margin-top: 0.5rem;
+      gap: 0.5rem;
+    }
+
+    .notification-item .notification-status .badge {
+      order: 2;
+    }
+
+    .notification-item .notification-status .mark-read-btn {
+      order: 1;
+    }
+
+    .notification-item .notification-actions {
+      flex-direction: column;
+    }
+
+    .notification-item .notification-actions .btn {
+      width: 100%;
+    }
+  }
+</style>
+
+<script>
+  // Notification count
+  let unreadCount = document.querySelectorAll('.notification-item.unread').length;
+  document.getElementById('notificationCount').textContent = unreadCount;
+
+  // Mark as read
+  function markAsRead(id) {
+    const item = document.querySelector(`.notification-item[data-id="${id}"]`);
+    if (item) {
+      item.classList.remove('unread');
+      item.classList.add('read');
+      // Update badge
+      const badge = item.querySelector('.badge');
+      if (badge) {
+        badge.textContent = 'Read';
+        badge.className = 'badge bg-secondary';
+      }
+      // Update checkmark
+      const checkBtn = item.querySelector('.mark-read-btn i');
+      if (checkBtn) {
+        checkBtn.className = 'fas fa-check-circle text-success';
+      }
+      // Update unread count
+      unreadCount--;
+      document.getElementById('notificationCount').textContent = unreadCount;
+    }
+  }
+
+  // Mark all as read
+  function markAllAsRead() {
+    document.querySelectorAll('.notification-item.unread').forEach(item => {
+      markAsRead(item.getAttribute('data-id'));
+    });
+    showToast('All notifications marked as read!', 'success');
+  }
+
+  // Dismiss notification
+  function dismissNotification(id) {
+    if (confirm('Are you sure you want to dismiss this notification?')) {
+      const item = document.querySelector(`.notification-item[data-id="${id}"]`);
+      if (item) {
+        item.style.transition = 'all 0.3s ease';
+        item.style.opacity = '0';
+        item.style.transform = 'translateX(20px)';
+        setTimeout(() => {
+          item.style.display = 'none';
+          showToast('Notification dismissed!', 'info');
+        }, 300);
+      }
+    }
+  }
+
+  // Take action
+  function takeAction(id) {
+    const item = document.querySelector(`.notification-item[data-id="${id}"]`);
+    const subject = item?.querySelector('.notification-header strong')?.textContent || 'Notification';
+    showToast(`Action taken for: ${subject}`, 'success');
+    // Mark as read when action is taken
+    markAsRead(id);
+  }
+
+  // Clear all
+  function clearAll() {
+    if (confirm('Are you sure you want to clear all notifications?')) {
+      document.querySelectorAll('.notification-item').forEach(item => {
+        item.style.transition = 'all 0.3s ease';
+        item.style.opacity = '0';
+        item.style.transform = 'translateX(20px)';
+        setTimeout(() => {
+          item.style.display = 'none';
+        }, 300);
+      });
+      setTimeout(() => {
+        document.getElementById('notificationCount').textContent = '0';
+        showToast('All notifications cleared!', 'info');
+      }, 400);
+    }
+  }
+
+  // Filter notifications
+  document.querySelectorAll('#notificationTabs .nav-link').forEach(tab => {
+    tab.addEventListener('click', function(e) {
+      e.preventDefault();
+      // Update active tab
+      document.querySelectorAll('#notificationTabs .nav-link').forEach(t => t.classList.remove('active'));
+      this.classList.add('active');
+      
+      const filter = this.getAttribute('data-filter');
+      const items = document.querySelectorAll('.notification-item');
+      
+      items.forEach(item => {
+        if (filter === 'all') {
+          item.style.display = '';
+        } else if (filter === 'unread') {
+          item.style.display = item.classList.contains('unread') ? '' : 'none';
+        } else if (filter === 'read') {
+          item.style.display = item.classList.contains('read') ? '' : 'none';
+        }
+      });
+    });
+  });
+
+  // Load more
+  function loadMore() {
+    showToast('Loading more notifications...', 'info');
+    // Simulate loading
+    setTimeout(() => {
+      showToast('No more notifications to load!', 'warning');
+    }, 1000);
+  }
+
+  // Toast notification
+  function showToast(message, type = 'info') {
+    const toast = document.createElement('div');
+    toast.className = 'toast-container position-fixed bottom-0 end-0 p-3';
+    toast.style.zIndex = '9999';
+    toast.innerHTML = `
+      <div class="toast show" role="alert">
+        <div class="toast-header bg-${type} text-white">
+          <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'warning' ? 'exclamation-triangle' : 'info-circle'} me-2"></i>
+          <strong class="me-auto">${type.charAt(0).toUpperCase() + type.slice(1)}</strong>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast"></button>
+        </div>
+        <div class="toast-body">${message}</div>
+      </div>
+    `;
+    document.body.appendChild(toast);
+    setTimeout(() => {
+      toast.remove();
+    }, 3000);
+  }
+</script>
+{% endblock %}
