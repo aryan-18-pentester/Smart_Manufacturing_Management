@@ -117,7 +117,8 @@ def dashboard():
     total_users = User.query.count()
     users_data = User.query.all()
     orders = Order.query.all()
-    return render_template('dashboard.html', total_users=total_users,orders=orders,users_data=users_data)
+    total_orders = Order.query.count()
+    return render_template('dashboard.html', total_users=total_users,orders=orders,users_data=users_data,total_orders=total_orders)
 
 
 
@@ -209,9 +210,9 @@ def Machines():
 
 
 
-#-------------delete-----------
-@app.route('/delete/<int:id>', methods=['POST'])
-def delete_record(id):
+#-------------delete_Machines-----------
+@app.route('/delete_Machines/<int:id>', methods=['POST'])
+def delete_Machines(id):
     # 1. Fetch the record by ID
     record = Data.query.filter_by(id=id, user_id=current_user.id).first_or_404()
     
@@ -225,11 +226,28 @@ def delete_record(id):
     return redirect(url_for('Machines'))   
 
 
+
+#-------------delete_Order-----------
+@app.route('/delete_order/<int:id>', methods=['POST'])
+def delete_order(id):
+    # 1. Fetch the record by ID
+    record = Order.query.filter_by(id=id, user_id=current_user.id).first_or_404()
+    
+    # 2. Delete from session
+    db.session.delete(record)
+    
+    # 3. Commit to database
+    db.session.commit()
+    
+    # 4. Redirect to prevent re-submission on refresh
+    return redirect(url_for('orders'))   
+
 #--------Orders--------------------
 @app.route('/orders', methods=['GET', 'POST'])
 @login_required
 def orders():
-
+    
+    total_orders = Order.query.count()
     if request.method == 'POST':
 
         customer_name = request.form.get('customer_name')
@@ -276,7 +294,8 @@ def orders():
     return render_template(
         'Orders.html',
         orders=orders_data,
-        machines=inventory_items
+        machines=inventory_items,
+        total_orders=total_orders
     )
 
 

@@ -96,7 +96,7 @@
               <td>{{ order.id }}</td>
               <td>{{ order.customer_name }}</td>
               <td>{{ order.data.name }}</td>
-              {# <td>${{ "%.2f"|format(order.total) }}</td> #}
+              {# <td>${{ "%.2f"|format(total_value) }}</td> #}
               <td>
                 <span class="badge badge-status 
                   {% if order.status == 'Pending' %}bg-warning text-dark
