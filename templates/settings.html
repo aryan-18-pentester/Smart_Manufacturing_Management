@@ -1,251 +1,141 @@
 {% extends "base.html" %}
 
-{% block title %}Settings - FlaskDash{% endblock %}
+{% block title %}Settings{% endblock %}
 {% block page_title %}Settings{% endblock %}
 
 {% block content %}
 <div class="settings-container">
-  <div class="row g-4">
-    <!-- ===== SIDEBAR NAVIGATION ===== -->
-    <div class="col-lg-3">
-      <div class="settings-sidebar">
-        <div class="list-group list-group-flush">
-          <a href="#profile" class="list-group-item list-group-item-action active" data-section="profile">
-            <i class="fas fa-user me-2"></i>Profile
-          </a>
-          <a href="#security" class="list-group-item list-group-item-action" data-section="security">
-            <i class="fas fa-shield-alt me-2"></i>Security
-          </a>
-          <a href="#preferences" class="list-group-item list-group-item-action" data-section="preferences">
-            <i class="fas fa-sliders-h me-2"></i>Preferences
-          </a>
-          <a href="#danger" class="list-group-item list-group-item-action text-danger" data-section="danger">
-            <i class="fas fa-exclamation-triangle me-2"></i>Danger Zone
-          </a>
+  <div class="row justify-content-center">
+    <div class="col-lg-8">
+      
+      <!-- ===== SINGLE SETTINGS CARD ===== -->
+      <div class="settings-card">
+        <div class="settings-card-header">
+          <i class="fas fa-cog text-primary me-2"></i>
+          <h5 class="mb-0">Account Settings</h5>
         </div>
-      </div>
-    </div>
-
-    <!-- ===== SETTINGS CONTENT ===== -->
-    <div class="col-lg-9">
-      <div class="settings-content">
-        
-        <!-- ===== PROFILE SECTION ===== -->
-        <div class="settings-section active" id="profile">
-          <h5 class="mb-3"><i class="fas fa-user text-primary me-2"></i>Profile</h5>
-          <form action="#" method="POST">
-            <div class="row g-3">
-              <div class="col-md-6">
-                <label for="username" class="form-label fw-semibold">Username</label>
-                <input type="text" class="form-control" id="username" name="username" value="{{ current_user.username }}" required>
-              </div>
-              <div class="col-md-6">
-                <label for="email" class="form-label fw-semibold">Email</label>
-                <input type="email" class="form-control" id="email" name="email" value="{{ current_user.email if current_user.email else 'user@example.com' }}" required>
-              </div>
-              <div class="col-12">
-                <button type="submit" class="btn btn-primary">
-                  <i class="fas fa-save me-1"></i>Save
-                </button>
-              </div>
+        <div class="settings-card-body">
+          <form action="{{ url_for('settings') }}" method="POST">
+            
+            <!-- Username -->
+            <div class="mb-3">
+              <label for="username" class="form-label fw-semibold">Username</label>
+              <input type="text" class="form-control" id="username" name="username" value="{{ current_user.username }}" required minlength="3">
+              <div class="form-text text-muted">Username must be at least 3 characters.</div>
             </div>
-          </form>
-        </div>
 
-        <!-- ===== SECURITY SECTION ===== -->
-        <div class="settings-section" id="security">
-          <h5 class="mb-3"><i class="fas fa-shield-alt text-primary me-2"></i>Security</h5>
-          <form action="#" method="POST">
-            <div class="row g-3">
-              <div class="col-md-12">
-                <label for="currentPassword" class="form-label fw-semibold">Current Password</label>
-                <input type="password" class="form-control" id="currentPassword" name="current_password" required>
-              </div>
-              <div class="col-md-6">
-                <label for="newPassword" class="form-label fw-semibold">New Password</label>
-                <input type="password" class="form-control" id="newPassword" name="new_password" required minlength="8">
-              </div>
-              <div class="col-md-6">
-                <label for="confirmPassword" class="form-label fw-semibold">Confirm Password</label>
-                <input type="password" class="form-control" id="confirmPassword" name="confirm_password" required>
-              </div>
-              <div class="col-12">
-                <button type="submit" class="btn btn-primary">
-                  <i class="fas fa-save me-1"></i>Update Password
-                </button>
-              </div>
+            <!-- Current Password -->
+            <div class="mb-3">
+              <label for="currentPassword" class="form-label fw-semibold">Current Password</label>
+              <input type="password" class="form-control" id="currentPassword" name="current_password" placeholder="Enter current password" required>
+              <div class="form-text text-muted">Required to change username or password.</div>
             </div>
-          </form>
-        </div>
 
-        <!-- ===== PREFERENCES SECTION ===== -->
-        <div class="settings-section" id="preferences">
-          <h5 class="mb-3"><i class="fas fa-sliders-h text-primary me-2"></i>Preferences</h5>
-          <form action="#" method="POST">
-            <div class="row g-3">
-              <div class="col-md-6">
-                <label for="language" class="form-label fw-semibold">Language</label>
-                <select class="form-select" id="language" name="language">
-                  <option value="en">English</option>
-                  <option value="es">Spanish</option>
-                  <option value="fr">French</option>
-                </select>
-              </div>
-              <div class="col-md-6">
-                <label for="timezone" class="form-label fw-semibold">Timezone</label>
-                <select class="form-select" id="timezone" name="timezone">
-                  <option value="UTC">UTC</option>
-                  <option value="America/New_York">Eastern Time</option>
-                  <option value="America/Chicago">Central Time</option>
-                  <option value="America/Los_Angeles">Pacific Time</option>
-                </select>
-              </div>
-              <div class="col-12">
-                <div class="form-check">
-                  <input class="form-check-input" type="checkbox" id="emailNotifications" name="email_notifications" checked>
-                  <label class="form-check-label" for="emailNotifications">
-                    Receive email notifications
-                  </label>
-                </div>
-              </div>
-              <div class="col-12">
-                <button type="submit" class="btn btn-primary">
-                  <i class="fas fa-save me-1"></i>Save Preferences
-                </button>
-              </div>
+            <!-- New Password -->
+            <div class="mb-3">
+              <label for="newPassword" class="form-label fw-semibold">New Password <span class="text-muted">(optional)</span></label>
+              <input type="password" class="form-control" id="newPassword" name="new_password" placeholder="Enter new password (leave blank to keep current)">
+              <div class="form-text text-muted">Password must be at least 8 characters if changed.</div>
             </div>
-          </form>
-        </div>
 
-        <!-- ===== DANGER ZONE ===== -->
-        <div class="settings-section" id="danger">
-          <h5 class="mb-3 text-danger"><i class="fas fa-exclamation-triangle text-danger me-2"></i>Danger Zone</h5>
-          <div class="danger-item d-flex justify-content-between align-items-center p-3 border border-danger rounded">
-            <div>
-              <h6 class="mb-1 text-danger">Delete Account</h6>
-              <p class="text-muted small mb-0">Permanently delete your account and all data.</p>
+            <!-- Confirm Password -->
+            <div class="mb-3">
+              <label for="confirmPassword" class="form-label fw-semibold">Confirm New Password</label>
+              <input type="password" class="form-control" id="confirmPassword" name="confirm_password" placeholder="Confirm new password">
             </div>
-            <button class="btn btn-danger" onclick="confirmDelete()">
-              <i class="fas fa-trash me-1"></i>Delete
+
+            <button type="submit" class="btn btn-primary">
+              <i class="fas fa-save me-1"></i>Save Changes
             </button>
-          </div>
+          </form>
         </div>
-        
       </div>
+
     </div>
   </div>
 </div>
 
 <style>
   .settings-container {
+    max-width: 900px;
+    margin: 0 auto;
+  }
+
+  .settings-card {
     background: #fff;
     border-radius: 16px;
-    padding: 1.5rem;
     box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    overflow: hidden;
+    border: 1px solid #e9ecef;
   }
 
-  .settings-sidebar .list-group-item {
-    border: none;
-    padding: 0.75rem 1rem;
-    border-radius: 10px;
-    margin-bottom: 0.25rem;
-    transition: 0.2s;
-  }
-
-  .settings-sidebar .list-group-item:hover {
+  .settings-card-header {
+    padding: 1rem 1.5rem;
     background: #f8f9fa;
+    border-bottom: 1px solid #e9ecef;
+    display: flex;
+    align-items: center;
   }
 
-  .settings-sidebar .list-group-item.active {
-    background: #e7f1ff;
-    color: #007bff;
-    border-left: 3px solid #007bff;
+  .settings-card-header h5 {
+    font-weight: 600;
   }
 
-  .settings-section {
-    display: none;
+  .settings-card-body {
+    padding: 1.5rem;
   }
 
-  .settings-section.active {
-    display: block;
-    animation: fadeIn 0.3s ease;
+  .settings-card-body .form-control:focus {
+    border-color: #86b7fe;
+    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.15);
   }
 
-  @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-
-  .danger-item {
-    background: #fff5f5;
-  }
-
-  @media (max-width: 992px) {
-    .settings-sidebar {
-      margin-bottom: 1.5rem;
-    }
-    
-    .settings-sidebar .list-group {
-      display: flex;
-      flex-direction: row;
-      overflow-x: auto;
-      gap: 0.25rem;
-    }
-    
-    .settings-sidebar .list-group-item {
-      white-space: nowrap;
-      flex-shrink: 0;
-    }
+  .btn-primary {
+    padding: 0.5rem 2rem;
   }
 
   @media (max-width: 576px) {
-    .settings-container {
-      padding: 0.75rem;
+    .settings-card-body {
+      padding: 1rem;
     }
     
-    .danger-item {
-      flex-direction: column;
-      gap: 0.5rem;
-      align-items: stretch;
+    .settings-card-header {
+      padding: 0.75rem 1rem;
+    }
+    
+    .btn-primary {
+      width: 100%;
     }
   }
 </style>
 
 <script>
-  // ===== SECTION NAVIGATION =====
-  document.querySelectorAll('.settings-sidebar .list-group-item').forEach(item => {
-    item.addEventListener('click', function(e) {
-      e.preventDefault();
-      
-      document.querySelectorAll('.settings-sidebar .list-group-item').forEach(i => i.classList.remove('active'));
-      this.classList.add('active');
-      
-      const sectionId = this.getAttribute('data-section');
-      document.querySelectorAll('.settings-section').forEach(s => s.classList.remove('active'));
-      document.getElementById(sectionId).classList.add('active');
-      
-      history.pushState(null, null, '#' + sectionId);
-    });
-  });
-
-  // ===== CHECK URL HASH ON LOAD =====
   document.addEventListener('DOMContentLoaded', function() {
-    const hash = window.location.hash.substring(1);
-    if (hash) {
-      const targetItem = document.querySelector(`.settings-sidebar .list-group-item[data-section="${hash}"]`);
-      if (targetItem) {
-        targetItem.click();
-      }
+    const newPassword = document.getElementById('newPassword');
+    const confirmPassword = document.getElementById('confirmPassword');
+    
+    // Password confirmation validation
+    if (newPassword && confirmPassword) {
+      confirmPassword.addEventListener('input', function() {
+        if (this.value && this.value !== newPassword.value) {
+          this.classList.add('is-invalid');
+          this.setCustomValidity('Passwords do not match');
+        } else {
+          this.classList.remove('is-invalid');
+          this.setCustomValidity('');
+        }
+      });
+      
+      newPassword.addEventListener('input', function() {
+        if (confirmPassword.value && this.value !== confirmPassword.value) {
+          confirmPassword.classList.add('is-invalid');
+          confirmPassword.setCustomValidity('Passwords do not match');
+        } else {
+          confirmPassword.classList.remove('is-invalid');
+          confirmPassword.setCustomValidity('');
+        }
+      });
     }
   });
-
-  // ===== CONFIRM DELETE =====
-  function confirmDelete() {
-    if (confirm('Are you sure you want to delete your account? This action cannot be undone!')) {
-      if (confirm('Please confirm again: This will permanently delete all your data.')) {
-        window.location.href = "#";
-      }
-    }
-  }
 </script>
 {% endblock %}

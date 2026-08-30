@@ -314,12 +314,76 @@ def ai_mail_assistant():
 def notifications():
     return render_template('notifications.html')
 
-
-@app.route('/settings')
+@app.route("/settings", methods=["GET", "POST"])
 @login_required
 def settings():
-    return render_template('settings.html')
 
+    if request.method == "POST":
+
+        username = request.form.get("username", "").strip()
+        current_password = request.form.get("current_password", "")
+        new_password = request.form.get("new_password", "")
+        confirm_password = request.form.get("confirm_password", "")
+
+        # Check current password
+        if not check_password_hash(
+            current_user.password_hash,
+            current_password
+        ):
+            flash("Current password is incorrect.", "error")
+            return redirect(url_for("settings"))
+
+        # Check username
+        if len(username) < 3:
+            flash("Username must be at least 3 characters.", "error")
+            return redirect(url_for("settings"))
+
+        # Check duplicate username
+        existing_user = User.query.filter(
+            User.username == username,
+            User.id != current_user.id
+        ).first()
+
+        if existing_user:
+            flash("Username already exists.", "error")
+            return redirect(url_for("settings"))
+
+        # Change username
+        current_user.username = username
+
+        # --------------------------------
+        # PASSWORD CHANGE
+        # --------------------------------
+
+        if new_password.strip():
+
+            if len(new_password) < 8:
+                flash(
+                    "New password must be at least 8 characters.",
+                    "error"
+                )
+                return redirect(url_for("settings"))
+
+            if new_password != confirm_password:
+                flash(
+                    "New passwords do not match.",
+                    "error"
+                )
+                return redirect(url_for("settings"))
+
+            # Generate new password hash
+            current_user.password_hash = generate_password_hash(
+                new_password
+            )
+
+        # Save everything
+        db.session.commit()
+
+        flash("Settings updated successfully.", "success")
+
+        return redirect(url_for("settings"))
+
+    return render_template("settings.html")
 
 @app.route('/profile')
 @login_required
