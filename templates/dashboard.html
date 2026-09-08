@@ -1,8 +1,104 @@
 {% extends "base.html" %}
 
-{% block title %}Dashboard {% endblock %}
+{% block title %}Dashboard - FlaskDash{% endblock %}
 {% block page_title %}Dashboard{% endblock %}
 
+{% block extra_css %}
+<!-- Load Chart.js from CDN (lightweight) -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+  /* Dashboard specific styles */
+  .chart-container {
+    position: relative;
+    height: 250px;
+    width: 100%;
+  }
+  
+  .stat-card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 1.2rem 1.5rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    border-left: 4px solid #3498db;
+    height: 100%;
+    transition: transform 0.2s ease;
+  }
+  
+  .stat-card:hover {
+    transform: translateY(-2px);
+  }
+  
+  .stat-card .stat-icon {
+    font-size: 1.8rem;
+    color: #3498db;
+    opacity: 0.7;
+  }
+  
+  .stat-card .stat-number {
+    font-size: 1.8rem;
+    font-weight: 600;
+    margin-bottom: 0;
+  }
+  
+  .stat-card .stat-label {
+    color: #7f8c8d;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  
+  .stat-card.border-warning { border-left-color: #f39c12; }
+  .stat-card.border-success { border-left-color: #2ecc71; }
+  .stat-card.border-danger { border-left-color: #e74c3c; }
+  
+  .stat-card .stat-icon.warning { color: #f39c12; }
+  .stat-card .stat-icon.success { color: #2ecc71; }
+  .stat-card .stat-icon.danger { color: #e74c3c; }
+  
+  .chart-box {
+    background: #fff;
+    border-radius: 12px;
+    padding: 1.2rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    height: 100%;
+  }
+  
+  .table-container {
+    background: #fff;
+    border-radius: 12px;
+    padding: 1.2rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  }
+  
+  .table-container .table th {
+    border-top: none;
+    color: #7f8c8d;
+    font-weight: 600;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+  }
+  
+  .badge-status {
+    font-weight: 500;
+    padding: 0.35rem 0.75rem;
+    border-radius: 30px;
+  }
+  
+  /* Responsive */
+  @media (max-width: 576px) {
+    .stat-card .stat-number {
+      font-size: 1.4rem;
+    }
+    .stat-card {
+      padding: 0.8rem 1rem;
+    }
+    .chart-container {
+      height: 200px;
+    }
+  }
+</style>
+{% endblock %}
 
 {% block content %}
 <!-- ===== STATISTICS CARDS ===== -->
@@ -11,10 +107,10 @@
     <div class="stat-card">
       <div class="d-flex justify-content-between align-items-center">
         <div>
-          <p class="stat-label">Total Users</p>
-          <p class="stat-number">{{ total_users|default(0) }}</p>
+          <p class="stat-label">Total Items</p>
+          <p class="stat-number">{{ total_items|default(0) }}</p>
         </div>
-        <i class="fas fa-users stat-icon"></i>
+        <i class="fas fa-boxes stat-icon"></i>
       </div>
     </div>
   </div>
@@ -22,10 +118,10 @@
     <div class="stat-card border-warning">
       <div class="d-flex justify-content-between align-items-center">
         <div>
-          <p class="stat-label">Revenue</p>
-          <p class="stat-number">${{ revenue|default(0) }}</p>
+          <p class="stat-label">Total Orders</p>
+          <p class="stat-number">{{ total_orders|default(0) }}</p>
         </div>
-        <i class="fas fa-dollar-sign stat-icon warning"></i>
+        <i class="fas fa-shopping-cart stat-icon warning"></i>
       </div>
     </div>
   </div>
@@ -33,10 +129,10 @@
     <div class="stat-card border-success">
       <div class="d-flex justify-content-between align-items-center">
         <div>
-          <p class="stat-label">Orders</p>
-          <p class="stat-number">{{ total_orders|default(0) }}</p>
+          <p class="stat-label">Inventory Value</p>
+          <p class="stat-number">${{ "%.0f"|format(total_value|default(0)) }}</p>
         </div>
-        <i class="fas fa-shopping-cart stat-icon success"></i>
+        <i class="fas fa-dollar-sign stat-icon success"></i>
       </div>
     </div>
   </div>
@@ -44,10 +140,10 @@
     <div class="stat-card border-danger">
       <div class="d-flex justify-content-between align-items-center">
         <div>
-          <p class="stat-label">Pending</p>
-          <p class="stat-number">{{ pending_orders|default(0) }}</p>
+          <p class="stat-label">Low Stock</p>
+          <p class="stat-number">{{ low_stock|default(0) }}</p>
         </div>
-        <i class="fas fa-clock stat-icon danger"></i>
+        <i class="fas fa-exclamation-triangle stat-icon danger"></i>
       </div>
     </div>
   </div>
@@ -56,15 +152,19 @@
 <!-- ===== CHARTS ROW ===== -->
 <div class="row g-4 mb-4">
   <div class="col-lg-6">
-    <div class="chart-box" style="background:#fff;border-radius:12px;padding:1.2rem;box-shadow:0 2px 8px rgba(0,0,0,0.04);">
-      <h6 class="mb-3"><i class="fas fa-chart-bar me-2 text-primary"></i>Monthly Sales</h6>
-      <canvas id="barChart" height="200"></canvas>
+    <div class="chart-box">
+      <h6 class="mb-3"><i class="fas fa-chart-bar me-2 text-primary"></i>Monthly Inventory Value</h6>
+      <div class="chart-container">
+        <canvas id="barChart"></canvas>
+      </div>
     </div>
   </div>
   <div class="col-lg-6">
-    <div class="chart-box" style="background:#fff;border-radius:12px;padding:1.2rem;box-shadow:0 2px 8px rgba(0,0,0,0.04);">
-      <h6 class="mb-3"><i class="fas fa-chart-line me-2 text-success"></i>Visitors Trend</h6>
-      <canvas id="lineChart" height="200"></canvas>
+    <div class="chart-box">
+      <h6 class="mb-3"><i class="fas fa-chart-line me-2 text-success"></i>Orders Trend</h6>
+      <div class="chart-container">
+        <canvas id="lineChart"></canvas>
+      </div>
     </div>
   </div>
 </div>
@@ -83,37 +183,35 @@
             <tr>
               <th>Order ID</th>
               <th>Customer</th>
-              <th>Machine</th>
+              <th>Item</th>
+              <th>Quantity</th>
               <th>Total</th>
-              <th>Status</th>
               <th>Date</th>
             </tr>
           </thead>
           <tbody>
-            {% for order in orders %}
-            
-            <tr>
-              <td>{{ order.id }}</td>
-              <td>{{ order.customer_name }}</td>
-              <td>{{ order.data.name }}</td>
-              {# <td>${{ "%.2f"|format(total_value) }}</td> #}
-              <td>
-                <span class="badge badge-status 
-                  {% if order.status == 'Pending' %}bg-warning text-dark
-                  {% elif order.status == 'Shipped' %}bg-info text-white
-                  {% elif order.status == 'Delivered' %}bg-success text-white
-                  {% else %}bg-secondary text-white{% endif %}">
-                  {# endblock #}
-                  {{ order.status }}
-                </span>
-              </td>
-              <td>{{ order.date.strftime('%Y-%m-%d') if order.date else '' }}</td>
-            </tr>
+            {% if orders %}
+              {% for order in orders %}
+              <tr>
+                <td>#{{ order.id }}</td>
+                <td>{{ order.customer_name }}</td>
+                <td>
+                  {% for item in inventory_items %}
+                    {% if item.id == order.inventory_item_id %}
+                      {{ item.name }}
+                    {% endif %}
+                  {% endfor %}
+                </td>
+                <td>{{ order.quantity_item }}</td>
+                <td>${{ "%.2f"|format(order.quantity_item * order.unit_price) }}</td>
+                <td>{{ order.due_date.strftime('%Y-%m-%d') if order.due_date else 'N/A' }}</td>
+              </tr>
+              {% endfor %}
             {% else %}
-            <tr>
-              <td colspan="6" class="text-center py-4 text-muted">No recent orders</td>
-            </tr> 
-            {% endfor %}
+              <tr>
+                <td colspan="6" class="text-center py-4 text-muted">No recent orders</td>
+              </tr>
+            {% endif %}
           </tbody>
         </table>
       </div>
@@ -124,51 +222,72 @@
 
 {% block extra_js %}
 <script>
-  // Bar chart
-  const barCtx = document.getElementById('barChart').getContext('2d');
-  new Chart(barCtx, {
-    type: 'bar',
-    data: {
-      labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
-      datasets: [{
-        label: 'Sales (USD)',
-        data: {{ chart_data|default([3200, 2800, 4100, 3900, 5200, 4800])|tojson }},
-        backgroundColor: 'rgba(52, 152, 219, 0.6)',
-        borderColor: 'rgba(52, 152, 219, 1)',
-        borderWidth: 1,
-        borderRadius: 4
-      }]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: { legend: { display: false } },
-      scales: { y: { beginAtZero: true } }
-    }
-  });
+  document.addEventListener('DOMContentLoaded', function() {
+    // ===== BAR CHART (Monthly Inventory Value) =====
+    const barCtx = document.getElementById('barChart').getContext('2d');
+    new Chart(barCtx, {
+      type: 'bar',
+      data: {
+        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+        datasets: [{
+          label: 'Inventory Value ($)',
+          data: {{ chart_data|default([1200, 1500, 1800, 1600, 2000, 2200])|tojson }},
+          backgroundColor: 'rgba(52, 152, 219, 0.6)',
+          borderColor: 'rgba(52, 152, 219, 1)',
+          borderWidth: 1,
+          borderRadius: 4
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false }
+        },
+        scales: {
+          y: { 
+            beginAtZero: true,
+            ticks: { 
+              callback: function(value) { return '$' + value; }
+            }
+          }
+        }
+      }
+    });
 
-  // Line chart
-  const lineCtx = document.getElementById('lineChart').getContext('2d');
-  new Chart(lineCtx, {
-    type: 'line',
-    data: {
-      labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-      datasets: [{
-        label: 'Visitors',
-        data: {{ visitors_data|default([120, 190, 170, 240, 210, 280, 310])|tojson }},
-        backgroundColor: 'rgba(46, 204, 113, 0.1)',
-        borderColor: 'rgba(46, 204, 113, 1)',
-        tension: 0.3,
-        fill: true,
-        pointBackgroundColor: '#2ecc71'
-      }]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: { legend: { display: false } },
-      scales: { y: { beginAtZero: true } }
-    }
+    // ===== LINE CHART (Orders Trend) =====
+    const lineCtx = document.getElementById('lineChart').getContext('2d');
+    new Chart(lineCtx, {
+      type: 'line',
+      data: {
+        labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+        datasets: [{
+          label: 'Orders',
+          data: {{ orders_trend|default([5, 8, 6, 10, 7, 12, 9])|tojson }},
+          backgroundColor: 'rgba(46, 204, 113, 0.1)',
+          borderColor: 'rgba(46, 204, 113, 1)',
+          tension: 0.3,
+          fill: true,
+          pointBackgroundColor: '#2ecc71',
+          pointRadius: 4
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false }
+        },
+        scales: {
+          y: { 
+            beginAtZero: true,
+            ticks: { 
+              stepSize: 2
+            }
+          }
+        }
+      }
+    });
   });
 </script>
 {% endblock %}
